@@ -1,6 +1,8 @@
 import crypto from "crypto";
 import prisma from "../config/database.js";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
+import { PlaywrightWebBaseLoader } from "@langchain/community/document_loaders/web/playwright";
+import { v4 as uuidv4 } from 'uuid';
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { CohereEmbeddings } from "@langchain/cohere";
 import { PineconeStore } from "@langchain/pinecone";
@@ -83,7 +85,7 @@ const embeddings = new CohereEmbeddings({
    * The file is processed directly from memory without saving it to the server.
    * Each vector is associated with a 'botName' for namespaced querying.
    */
-  export const uploadPdf = async (req, res) => {
+  /*  export const uploadPdf = async (req, res) => {
     try {
       // 1. Get user, file, and botName from the request
       const userId = req.id; // Assuming your 'isAuthenticated' middleware adds user to req
@@ -165,6 +167,104 @@ const embeddings = new CohereEmbeddings({
       });
     }
   };
+*/
+ 
+export const createBot = async (req, res) => {
+  try {
+      // --- Step 1: Initial Validations ---
+      const userId = req.id;
+      if (!userId) {
+          return res.status(401).json({ success: false, message: "User not authenticated." });
+      }
+
+      const { botName, url } = req.body;
+      if (!botName) {
+          return res.status(400).json({ error: "botName is required." });
+      }
+
+      // Check karo ki ya toh file hai ya URL. Dono mein se ek hona zaroori hai.
+      if (!req.file && !url) {
+          return res.status(400).json({ error: "Please provide either a PDF file or a URL." });
+      }
+
+      // --- Step 2: Generate API Key FIRST ---
+      const newApiKey = `sa-${uuidv4()}`;
+
+      // --- Step 3: Load Document based on source (PDF or URL) ---
+      let doc;
+      let source;
+
+      if (req.file) {
+          // Agar PDF file aayi hai
+          console.log("Preparing documents from PDF...");
+          source = req.file.originalname;
+          const blob = new Blob([req.file.buffer], { type: 'application/pdf' });
+          const loader = new PDFLoader(blob, { splitPages: false });
+          doc = await loader.load();
+      } else if (url) {
+          // Agar URL aaya hai
+          console.log(`Preparing documents from URL: ${url}`);
+          source = url;
+          const loader = new PlaywrightWebBaseLoader(url, {
+              evaluate: async (page) => await page.evaluate(() => document.body.innerText),
+          });
+          doc = await loader.load();
+      }
+
+      // --- Step 4: Split Text and Prepare for Pinecone (Common Logic) ---
+      const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 500, chunkOverlap: 100 });
+      const texts = await textSplitter.splitText(doc[0].pageContent);
+
+      const documents = texts.map((chunk) => ({
+          pageContent: chunk,
+          metadata: {
+              ...doc[0].metadata,
+              source: source, // source variable (file name or URL) yahan use hoga
+              apiKey: newApiKey,
+          },
+      }));
+      
+      // --- Step 5: Upload to Pinecone ---
+      console.log("Uploading documents to Pinecone...");
+      await vectorStore.addDocuments(documents);
+      console.log("Document successfully indexed in Pinecone.");
+
+      // --- Step 6: Create Bot in DB (Only after successful upload) ---
+      console.log("Creating bot and API key in the database...");
+      const newBot = await prisma.bot.create({
+          data: {
+              name: botName,
+              owner: { connect: { id: userId } },
+              apiKey: { create: { key: newApiKey } }
+          },
+          include: { apiKey: true }
+      });
+
+      console.log(`Bot '${newBot.name}' and its API key created successfully.`);
+
+      // --- Step 7: Send Final Success Response ---
+      res.status(201).json({
+          success: true,
+          message: `Bot '${newBot.name}' created and document indexed successfully from ${source}.`,
+          bot: {
+              id: newBot.id,
+              name: newBot.name,
+              createdAt: newBot.createdAt,
+          },
+          apiKey: newBot.apiKey.key
+      });
+
+  } catch (error) {
+      console.error("Error in createBot function:", error);
+      res.status(500).json({
+          success: false,
+          message: "An error occurred while creating the bot. Please try again.",
+          error: error.message,
+      });
+  }
+};
+
+// User the web crawler to fetch the data from the web
 
 
 
@@ -172,52 +272,96 @@ const embeddings = new CohereEmbeddings({
 //IMPORTANT SECTION
 // Retrive the pdf from the pinecone db
 const groq = new Groq({ apiKey:process.env.GROQ_API_KEY });
+
+
 export const retrivePdf = async (req, res) => {
-    try {
-      // 1. Header se 'authorization' nikalna
-    const authHeader = req.headers['authorization'];
+  try {
+      const authHeader = req.headers['authorization'];
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+          return res.status(401).json({ success: false, message: "Authorization header with Bearer token is missing." });
+      }
+      const apiKey = authHeader.split(' ')[1];
 
-    // 2. Check karna ki header मौजूद hai aur 'Bearer ' se start hota hai
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
-        success: false,
-        message: "Authorization header with Bearer token is missing or invalid.",
+      const { question } = req.body;
+
+      if (!question) {
+          return res.status(400).json({ success: false, message: "Question is required." });
+      }
+
+      const apiKeyRecord = await prisma.apiKey.findUnique({
+          where: { key: apiKey },
+          include: {
+              bot: {
+                  include: {
+                      owner: true
+                  }
+              }
+          }
       });
-    }
 
-    // 3. 'Bearer ' prefix ko hatakar actual API key nikalna
-    const apiKey = authHeader.split(' ')[1];
+      if (!apiKeyRecord || !apiKeyRecord.bot || !apiKeyRecord.bot.owner) {
+          return res.status(401).json({ success: false, message: "Invalid API Key." });
+      }
 
-    // 4. Body se question aur botName nikalna
+      const owner = apiKeyRecord.bot.owner;
+
+      if (owner.requestsLeft <= 0) {
+          return res.status(403).json({ success: false, message: "You have exceeded your request limit." });
+      }
+      
+      // --- IMPORTANT CHANGE ---
+      // Ab hum botName ki jagah unique apiKey se filter kar rahe hain
+      const relevantChunks = await vectorStore.similaritySearch(
+          question,
+          3,
+          { apiKey: apiKey } 
+      );
+
+      const context = relevantChunks.length > 0
+          ? relevantChunks.map(chunk => chunk.pageContent).join('\n\n')
+          : "No relevant context found in the provided documents.";
+
+      const SYSTEM_PROMPT = `You are an assistant for question-answering tasks. Use the following relevant pieces of retrieved context to answer the question. If you do not know the answer based on the context, say "I couldn't find an answer in the provided documents.". Be concise and helpful.`;
+
+      const userQuery = `Relevant context: \n${context}\n\nQuestion: ${question}`;
+
+      const completion = await groq.chat.completions.create({
+          messages: [
+              { role: "system", content: SYSTEM_PROMPT },
+              { role: 'user', content: userQuery }
+          ],
+          model: "llama3-8b-8192",
+      });
+
+      const answer = completion.choices[0].message.content;
+
+      await prisma.user.update({
+          where: { id: owner.id },
+          data: { requestsLeft: { decrement: 1 } },
+      });
+
+      res.status(200).json({
+          success: true,
+          answer: answer,
+      });
+
+  } catch (error) {
+      console.error("Error in retrivePdf:", error);
+      res.status(500).json({ success: false, message: "An internal server error occurred." });
+  }
+};
+
+
+
+  // Demo bot use on the bot detailed page
+  export const retrivePdfDemo = async (req, res) => {
+    try {
     const { question, botName } = req.body;
   
-      // 2. API Key ko validate karna aur user details fetch karna
-      const apiKeyRecord = await prisma.apiKey.findUnique({
-        where: { key: apiKey },
-        include: { user: true }, // User details bhi saath mein le aayenge
-      });
-  
-      if (!apiKeyRecord || !apiKeyRecord.user) {
-        return res.status(401).json({ success: false, message: "Invalid API Key." });
-      }
-  
-      const user = apiKeyRecord.user;
-  
-      // 3. User ke remaining request credits check karna
-      if (user.requestsLeft <= 0) {
-        return res.status(403).json({
-          success: false,
-          message: "You have exceeded your request limit. Please upgrade your plan.",
-        });
-      }
-  
-      // 4. Pinecone se relevant data retrieve karna (botName ke basis par filter karke)
-      // Hum `similaritySearch` ke teesre argument mein filter object pass kar rahe hain.
-      // Isse search sirf uss bot ke vectors par hoga jiska naam match karega.
       const relevantChunks = await vectorStore.similaritySearch(
         question,
         3, // Number of chunks to retrieve
-        { botName: botName } // <-- Yahan par filtering ho rahi hai
+        { botName: botName } // <-- Here filtering done
       );
   
       // Agar koi relevant chunk nahi mila
@@ -228,7 +372,7 @@ export const retrivePdf = async (req, res) => {
         });
       }
       
-      const context = relevantChunks.map(chunk => chunk.pageContent).join('\n\n');
+      const context = relevantChunks.map(chunk => chunk.pageContent).join('\n\n'); 
   
       // 5. Groq LLM ko context aur question bhejkar answer generate karna
       const SYSTEM_PROMPT = `You are an assistant for question-answering tasks. Use the following relevant pieces of retrieved context to answer the question. If you do not know the answer, say "I don't know". Be concise and helpful.`;
@@ -246,17 +390,6 @@ export const retrivePdf = async (req, res) => {
   
       const answer = completion.choices[0].message.content;
   
-      // 6. User ke request credits ko 1 se kam karna
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          requestsLeft: {
-            decrement: 1, // Atomically decreases the count by 1
-          },
-        },
-      });
-  
-      // 7. Final answer client ko send karna
       res.status(200).json({ success: true, answer: answer });
   
     } catch (error) {
@@ -267,8 +400,6 @@ export const retrivePdf = async (req, res) => {
       });
     }
   };
-
-
 
 
   // Delete the bot  and data form the the pinecone db
@@ -330,3 +461,73 @@ export const retrivePdf = async (req, res) => {
       });
     }
   };
+
+  // Get a specific bot by ID
+  export const getBot = async (req, res) => {
+    try {
+      const userId = req.id;
+      const { botId } = req.params;
+
+      if (!botId) {
+        return res.status(400).json({ success: false, message: "Bot ID is required." });
+      }
+
+      const bot = await prisma.bot.findUnique({
+        where: {
+          id: botId,
+        },
+      });
+
+      if (!bot) {
+        return res.status(404).json({ success: false, message: "Bot not found." });
+      }
+
+      // Check if the user owns this bot
+      if (bot.ownerId !== userId) {
+        return res.status(403).json({ success: false, message: "You are not authorized to access this bot." });
+      }
+
+      res.status(200).json({
+        success: true,
+        bot: bot,
+      });
+
+    } catch (error) {
+      console.error("Error getting bot:", error);
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while fetching the bot.",
+      });
+    }
+  };
+
+  // Get all bots for a user
+  export const getUserBots = async (req, res) => {
+    try {
+      const userId = req.id;
+
+      const bots = await prisma.bot.findMany({
+        where: {
+          ownerId: userId,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+      res.status(200).json({
+        success: true,
+        bots: bots,
+      });
+
+    } catch (error) {
+      console.error("Error getting user bots:", error);
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while fetching your bots.",
+      });
+    }
+  };
+
+
+  
