@@ -330,7 +330,7 @@ export const retrivePdf = async (req, res) => {
               { role: "system", content: SYSTEM_PROMPT },
               { role: 'user', content: userQuery }
           ],
-          model: "llama3-8b-8192",
+          model: "llama-3.1-8b-instant",
       });
 
       const answer = completion.choices[0].message.content;
@@ -385,7 +385,7 @@ export const retrivePdf = async (req, res) => {
           { role: "system", content: SYSTEM_PROMPT },
           { role: 'user', content: userQuery }
         ],
-        model: "llama3-8b-8192", // Using a fast and capable model from Groq
+        model: "llama-3.1-8b-instant", // Using a fast and capable model from Groq
       });
   
       const answer = completion.choices[0].message.content;
@@ -400,7 +400,6 @@ export const retrivePdf = async (req, res) => {
       });
     }
   };
-
 
   // Delete the bot  and data form the the pinecone db
   export const deleteBot = async (req, res) => {
@@ -530,4 +529,212 @@ export const retrivePdf = async (req, res) => {
   };
 
 
+
+
+
+
+  export const serveWidget = (req, res) => {
+    // Is poore script ko hum client ke browser mein bhejenge.
+    const widgetScript = `
+(function() {
+    // Step 1: API Key ko script tag se nikalo
+    const scriptTag = document.currentScript;
+    const apiKey = scriptTag.getAttribute('data-api-key');
+    
+    if (!apiKey) {
+        console.error("Botcraft API key is missing. Please add 'data-api-key' attribute to the script tag.");
+        return;
+    }
+
+    // Step 2: Widget ka poora HTML
+    const widgetHTML = \`
+        <div class="chat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path></svg>
+        </div>
+        <div class="chat-widget">
+            <div class="chat-header">
+                <h3>Chat with AI</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="chat-body">
+                <div class="message assistant">Hi! How can I help you today?</div>
+            </div>
+            <div class="chat-footer">
+                <form id="chat-form">
+                    <input type="text" id="chat-input" placeholder="Ask a question..." autocomplete="off" required>
+                    <button type="submit">Send</button>
+                </form>
+            </div>
+        </div>
+    \`;
+
+    // Step 3: Widget ki poori CSS
+    const widgetCSS = \`
+        .chat-widget, .chat-icon {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .chat-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 9998;
+            transition: transform 0.2s ease-in-out;
+        }
+        .chat-icon:hover {
+            transform: scale(1.1);
+        }
+        .chat-widget {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            max-width: calc(100% - 40px);
+            height: 500px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 9999;
+        }
+        .chat-widget.open {
+            transform: scale(1);
+        }
+        .chat-header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #0056b3;
+        }
+        .chat-header h3 { margin: 0; font-size: 18px; font-weight: 600; }
+        .chat-header .close-btn { background: none; border: none; color: white; opacity: 0.8; font-size: 24px; cursor: pointer; transition: opacity 0.2s; }
+        .chat-header .close-btn:hover { opacity: 1; }
+        .chat-body { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background-color: #f9f9f9; }
+        .message { padding: 10px 15px; border-radius: 18px; max-width: 85%; line-height: 1.5; word-wrap: break-word; }
+        .message.user { background-color: #007bff; color: white; align-self: flex-end; border-bottom-right-radius: 5px; }
+        .message.assistant { background-color: #e9e9eb; color: #333; align-self: flex-start; border-bottom-left-radius: 5px; }
+        .message.loading { align-self: flex-start; background: #e9e9eb; padding: 12px 15px; border-radius: 18px; }
+        .message.loading span { display: inline-block; width: 8px; height: 8px; background-color: #999; border-radius: 50%; animation: bounce 1.2s infinite ease-in-out; }
+        .message.loading span:nth-child(2) { animation-delay: -0.2s; }
+        .message.loading span:nth-child(3) { animation-delay: -0.4s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+        .chat-footer { padding: 10px; border-top: 1px solid #ddd; background: #fff; }
+        #chat-form { display: flex; align-items: center; }
+        #chat-input { flex-grow: 1; border: 1px solid #ccc; border-radius: 20px; padding: 10px 15px; font-size: 16px; transition: border-color 0.2s; }
+        #chat-input:focus { border-color: #007bff; outline: none; }
+        #chat-form button { background-color: #007bff; border: none; color: white; border-radius: 50%; width: 40px; height: 40px; margin-left: 10px; cursor: pointer; font-weight: bold; display: flex; justify-content: center; align-items: center; transition: background-color 0.2s; }
+        #chat-form button:hover { background-color: #0056b3; }
+    \`;
+
+    // Step 4: Page mein HTML aur CSS inject karo
+    document.body.insertAdjacentHTML('beforeend', widgetHTML);
+    const styleTag = document.createElement('style');
+    styleTag.innerHTML = widgetCSS;
+    document.head.appendChild(styleTag);
+
+    // Step 5: Saare elements ko select karke functionality add karo
+    const chatIcon = document.querySelector('.chat-icon');
+    const chatWidget = document.querySelector('.chat-widget');
+    const closeBtn = document.querySelector('.close-btn');
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const chatBody = document.querySelector('.chat-body');
+
+    chatIcon.addEventListener('click', () => {
+        chatWidget.classList.toggle('open');
+    });
+
+    closeBtn.addEventListener('click', () => {
+        chatWidget.classList.remove('open');
+    });
+
+    chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const userMessage = chatInput.value.trim();
+        if (!userMessage) return;
+
+        appendMessage(userMessage, 'user');
+        chatInput.value = '';
+        showLoadingIndicator();
+
+        try {
+            //  IMPORTANT: Yahan apne server ka actual domain daalein
+            const response = await fetch('http://localhost:3000/api/v/bot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': \`Bearer \${apiKey}\`
+                },
+                body: JSON.stringify({
+                    question: userMessage
+                })
+            });
+
+            removeLoadingIndicator();
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Network response was not ok');
+            }
+
+            const data = await response.json();
+            appendMessage(data.answer, 'assistant');
+
+        } catch (error) {
+            removeLoadingIndicator();
+            appendMessage('Sorry, something went wrong. Please try again.', 'assistant');
+            console.error('Error fetching chat response:', error);
+        }
+    });
+
+    function appendMessage(text, type) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', type);
+        // To render newlines correctly
+        messageDiv.innerText = text; 
+        chatBody.appendChild(messageDiv);
+        chatBody.scrollTop = chatBody.scrollHeight; // Auto-scroll to bottom
+    }
+
+    function showLoadingIndicator() {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.classList.add('message', 'loading');
+        loadingDiv.innerHTML = \`<span></span><span></span><span></span>\`;
+        chatBody.appendChild(loadingDiv);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function removeLoadingIndicator() {
+        const loadingDiv = chatBody.querySelector('.loading');
+        if (loadingDiv) {
+            loadingDiv.remove();
+        }
+    }
+})();
+    `;
+
+    // Final Step: Script ko as a JavaScript file send karo
+    res.setHeader('Content-Type', 'application/javascript');
+    res.send(widgetScript);
+};
   
+ 
+
