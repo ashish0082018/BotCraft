@@ -41,11 +41,13 @@ export const signUp = async (req, res) => {
         res.cookie('token', token, { httpOnly: true, sameSite: 'strict', maxAge: 1 * 24 * 60 * 60 * 1000 });
         return res.status(200).json({
             user: {
-                name: user.name,
-                email: user.email,
-                id: user.id,
-                plan: user.plan,
-                requestsLeft: user.requestsLeft,
+                name:user.name,
+                email:user.email,
+                id:user.id,
+                plan:user.plan,
+                requestsLeft:user.requestsLeft,
+                createdAt:user.createdAt,
+                updatedAt:user.updatedAt
             },
             success: true,
         });
@@ -96,7 +98,9 @@ export  const signIn=async (req,res)=>{
             email:loginuser.email,
             id:loginuser.id,
             plan:loginuser.plan,
-            requestsLeft:loginuser.requestsLeft
+            requestsLeft:loginuser.requestsLeft,
+            createdAt:loginuser.createdAt,
+            updatedAt:loginuser.updatedAt
            },
          
         }) 

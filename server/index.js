@@ -12,13 +12,13 @@ dotenv.config()
 const app=express();
 const PORT=process.env.PORT || 8000;
 // const __dirname=path.resolve(); 
-app.use(cors());
-// app.use(cors({
-//     origin: process.env.NODE_ENV === 'production' 
-//         ? "https://blogify-6ym8.onrender.com" 
-//         : ["http://localhost:3000", "http://localhost:8080", "http://127.0.0.1:3000", "http://127.0.0.1:5173"],
-//     credentials: true,
-// }))
+// app.use(cors());
+app.use(cors({
+    origin: process.env.NODE_ENV === 'production' 
+        ? "https://blogify-6ym8.onrender.com" 
+        : ["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:3000", "http://127.0.0.1:5173"],
+    credentials: true,
+}))
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}))
