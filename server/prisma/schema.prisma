@@ -23,13 +23,30 @@ model User {
   updatedAt    DateTime  @updatedAt
 }
 
+// === BOT MODEL UPDATE ===
 model Bot {
   id        String   @id @default(cuid())
   name      String
   owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId   String
-  apiKey    ApiKey?  // Relation to its own ApiKey
+  apiKey    ApiKey?
   createdAt DateTime @default(now())
+
+  
+  status         BotStatus @default(ACTIVE)
+  totalQueries   Int       @default(0)
+  lastActivityAt DateTime?
+  primaryColor   String?   @default("#007bff")
+  headerText     String?   @default("Chat with AI")
+  initialMessage String?   @default("Hi! How can I help you today?")
+  trainedSources String[]
+}
+
+
+enum BotStatus {
+  ACTIVE
+  INACTIVE
+  TRAINING
 }
 
 model ApiKey {
