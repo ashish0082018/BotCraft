@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CreditCard, Check, Clock, X } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import type { Payment } from '../../types/';
-import { dummyPayments } from '../../utils/dummyData';
+import { updateUserData } from '../../utils/api';
 
 export default function Billing() {
   const user = useSelector((state: any) => state.user.authUserDetails);
+
+  // Refresh user data when component mounts
+  useEffect(() => {
+    if (user) {
+      updateUserData().catch(console.error);
+    }
+  }, []);
 
   if (!user) {
     return (
@@ -60,24 +67,24 @@ export default function Billing() {
         
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-lg font-semibold text-white">{user.plan} Plan</h3>
+            <h3 className="text-lg font-semibold text-white">{user.plan.currentPlan} Plan</h3>
             <p className="text-gray-400">
-              {user.plan === 'FREE' 
-                ? 'Up to 2 bots • 1,000 API requests' 
-                : 'Up to 10 bots • 15,000 API requests'
+              {user.plan.currentPlan === 'FREE' 
+                ? `Up to ${user.stats.botsLimit} bots • ${user.plan.requestsLimit} API requests` 
+                : `Up to ${user.stats.botsLimit} bots • ${user.plan.requestsLimit} API requests`
               }
             </p>
           </div>
           <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
-            user.plan === 'PRO' 
+            user.plan.currentPlan === 'PRO' 
               ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white' 
               : 'bg-gray-700 text-gray-300'
           }`}>
-            {user.plan}
+            {user.plan.currentPlan}
           </span>
         </div>
 
-        {user.plan === 'FREE' && (
+        {user.plan.currentPlan === 'FREE' && (
           <div className="border-t border-gray-700 pt-6">
             <h4 className="text-lg font-semibold text-white mb-4">Upgrade to Pro</h4>
             <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-lg p-6">
@@ -124,7 +131,7 @@ export default function Billing() {
       <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-8">
         <h2 className="text-xl font-semibold text-white mb-6">Payment History</h2>
         
-        {dummyPayments.length > 0 ? (
+        {user.paymentHistory && user.paymentHistory.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -135,7 +142,7 @@ export default function Billing() {
                 </tr>
               </thead>
               <tbody>
-                {dummyPayments.map((payment) => (
+                {user.paymentHistory.map((payment: any) => (
                   <tr key={payment.id} className="border-b border-gray-800">
                     <td className="py-4 text-white font-medium">
                       ${payment.amount.toFixed(2)}

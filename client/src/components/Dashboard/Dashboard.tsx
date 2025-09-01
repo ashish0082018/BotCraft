@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Bot, Calendar, CreditCard, TrendingUp } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { updateUserData } from '../../utils/api';
 
 export default function Dashboard() {
   const user = useSelector((state: any) => state.user.authUserDetails);
+
+  // Refresh user data when component mounts
+  useEffect(() => {
+    if (user) {
+      updateUserData().catch(console.error);
+    }
+  }, []);
 
   if (!user) {
     return (
@@ -22,13 +30,13 @@ export default function Dashboard() {
     });
   };
 
-  const requestsProgress = (user.requestsLeft / (user.plan === 'FREE' ? 1000 : 15000)) * 100;
+  const requestsProgress = (user.plan.requestsLeft / user.plan.requestsLimit) * 100;
 
   return (
     <div>
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">
-          Welcome back, {user.name}
+          Welcome back, {user.profile.name}
         </h1>
         <p className="text-gray-400">
           Here's an overview of your BotCraft account
@@ -41,16 +49,16 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-4">
             <CreditCard className="h-8 w-8 text-blue-400" />
             <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-              user.plan === 'PRO' 
+              user.plan.currentPlan === 'PRO' 
                 ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white' 
                 : 'bg-gray-700 text-gray-300'
             }`}>
-              {user.plan}
+              {user.plan.currentPlan}
             </span>
           </div>
           <h3 className="text-lg font-semibold text-white mb-1">Current Plan</h3>
           <p className="text-gray-400 text-sm">
-            {user.plan === 'FREE' ? 'Free tier with basic features' : 'Pro tier with advanced features'}
+            {user.plan.currentPlan === 'FREE' ? 'Free tier with basic features' : 'Pro tier with advanced features'}
           </p>
         </div>
 
@@ -58,7 +66,7 @@ export default function Dashboard() {
         <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-6 hover:border-blue-400/40 transition-all">
           <div className="flex items-center justify-between mb-4">
             <TrendingUp className="h-8 w-8 text-green-400" />
-            <span className="text-2xl font-bold text-white">{user.requestsLeft}</span>
+            <span className="text-2xl font-bold text-white">{user.plan.requestsLeft}</span>
           </div>
           <h3 className="text-lg font-semibold text-white mb-2">Requests Left</h3>
           <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
@@ -76,11 +84,11 @@ export default function Dashboard() {
         <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-6 hover:border-blue-400/40 transition-all">
           <div className="flex items-center justify-between mb-4">
             <Bot className="h-8 w-8 text-purple-400" />
-            <span className="text-2xl font-bold text-white">{user.bots ? user.bots.length : 0}</span>
+            <span className="text-2xl font-bold text-white">{user.stats.totalBots}</span>
           </div>
           <h3 className="text-lg font-semibold text-white mb-1">Total Bots</h3>
           <p className="text-gray-400 text-sm">
-            {user.plan === 'FREE' ? `${2 - user.bots ? user.bots.length : 0} slots remaining` : `${10 - user.bots ? user.bots.length : 0} slots remaining`}
+            {user.plan.currentPlan === 'FREE' ? `${user.stats.botsLimit - user.stats.totalBots} slots remaining` : `${user.stats.botsLimit - user.stats.totalBots} slots remaining`}
           </p>
         </div>
 
@@ -91,7 +99,7 @@ export default function Dashboard() {
           </div>
           <h3 className="text-lg font-semibold text-white mb-1">Account Created</h3>
           <p className="text-gray-400 text-sm">
-            {formatDate(user.createdAt)}
+            {formatDate(user.profile.memberSince)}
           </p>
         </div>
       </div>
@@ -100,7 +108,7 @@ export default function Dashboard() {
       <div className="mt-8">
         <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-6">
           <h2 className="text-xl font-semibold text-white mb-4">Recent Bots</h2>
-          {user.bots && user.bots.length  > 0 ? (
+          {user.bots && user.bots.length > 0 ? (
             <div className="space-y-3">
               {user.bots?.slice(0, 3).map((bot: any) => (
                 <div key={bot.id} className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-gray-700">

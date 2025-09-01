@@ -4,6 +4,7 @@ import { Mail, Lock, User, Bot } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { setauthUserDetail } from '../../redux/userSlice';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 interface SignUpProps {
   onSignUp: (name: string, email: string, password: string) => void;
@@ -31,13 +32,15 @@ export default function SignUp({ onSignUp }: SignUpProps) {
       });
       
       if (response.data.success) {
-        console.log('Account created successfully!');
-        dispatch(setauthUserDetail(response.data.user));
-        navigate('/');
+        
+        toast.success('Account created successfully!');
+        dispatch(setauthUserDetail(response.data.dashboardData));
+        navigate('/dashboard');
       }
     } catch (err: any) {
       const message = err.response?.data?.message || 'Something went wrong';
-      console.error(message);
+   
+      toast.error(message);
     } finally {
       setLoading(false);
     }

@@ -42,7 +42,8 @@ export default function BotDetails() {
   };
 
   const copyApiKey = () => {
-    navigator.clipboard.writeText(user.apiKey.key);
+    // TODO: Get API key from bot data or user data
+    navigator.clipboard.writeText('API Key not available');
   };
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -88,7 +89,7 @@ export default function BotDetails() {
             </h3>
             <div className="bg-gray-900/80 rounded-lg p-4 relative group">
               <code className="text-green-400 text-sm break-all">
-                {user.apiKey.key}
+                API Key not available
               </code>
               <button
                 onClick={copyApiKey}

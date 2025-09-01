@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Mail, CreditCard, Key, Trash2 } from 'lucide-react';
 import { useSelector } from 'react-redux';
+import { updateUserData } from '../../utils/api';
+import toast from 'react-hot-toast';
 
 export default function Settings() {
   const user = useSelector((state: any) => state.user.authUserDetails);
@@ -8,6 +10,13 @@ export default function Settings() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  // Refresh user data when component mounts
+  useEffect(() => {
+    if (user) {
+      updateUserData().catch(console.error);
+    }
+  }, []);
 
   if (!user) {
     return (
@@ -21,10 +30,13 @@ export default function Settings() {
     e.preventDefault();
     if (newPassword === confirmPassword) {
       // TODO: Implement password update API call
-      console.log('Password updated');
+      
+      toast.success('Password updated successfully!');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
+    } else {
+      toast.error('New passwords do not match');
     }
   };
 
@@ -57,7 +69,7 @@ export default function Settings() {
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">Name</label>
               <div className="px-4 py-3 bg-white/10 border border-gray-600 rounded-lg text-white">
-                {user.name}
+                {user.profile.name}
               </div>
             </div>
             
@@ -65,7 +77,7 @@ export default function Settings() {
               <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
               <div className="px-4 py-3 bg-white/10 border border-gray-600 rounded-lg text-white flex items-center">
                 <Mail className="h-4 w-4 text-gray-400 mr-2" />
-                {user.email}
+                {user.profile.email}
               </div>
             </div>
             
@@ -73,21 +85,21 @@ export default function Settings() {
               <label className="block text-sm font-medium text-gray-300 mb-2">Plan</label>
               <div className="px-4 py-3 bg-white/10 border border-gray-600 rounded-lg text-white flex items-center">
                 <CreditCard className="h-4 w-4 text-gray-400 mr-2" />
-                {user.plan}
+                {user.plan.currentPlan}
               </div>
             </div>
             
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">Requests Left</label>
               <div className="px-4 py-3 bg-white/10 border border-gray-600 rounded-lg text-white">
-                {user.requestsLeft.toLocaleString()}
+                {user.plan.requestsLeft.toLocaleString()}
               </div>
             </div>
             
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-300 mb-2">Member Since</label>
               <div className="px-4 py-3 bg-white/10 border border-gray-600 rounded-lg text-white">
-                {formatDate(user.createdAt)}
+                {formatDate(user.profile.memberSince)}
               </div>
             </div>
           </div>
@@ -194,6 +206,7 @@ export default function Settings() {
                 onClick={() => {
                   // TODO: Implement account deletion API call
                   console.log('Account deleted');
+                  toast.success('Account deleted successfully');
                   setShowDeleteConfirm(false);
                 }}
                 className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"

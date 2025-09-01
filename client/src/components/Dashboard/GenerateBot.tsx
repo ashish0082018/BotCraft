@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Upload, FileText, Globe, Plus, Bot, Trash2, Calendar } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import type { Bot as BotType } from '../../types';
+import { updateUserData } from '../../utils/api';
+import toast from 'react-hot-toast';
 
 export default function GenerateBot() {
   const user = useSelector((state: any) => state.user.authUserDetails);
@@ -14,6 +16,14 @@ export default function GenerateBot() {
   const [dragActive, setDragActive] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Refresh user data when component mounts
+  useEffect(() => {
+    if (user) {
+      updateUserData().catch(console.error);
+    }
+  }, []);
 
   if (!user) {
     return (
@@ -81,26 +91,45 @@ export default function GenerateBot() {
 
       if (response.data.success) {
         console.log('Bot created successfully:', response.data.bot);
-        // TODO: Update Redux store with new bot
-        // For now, just reset the form
+        // Update user data to reflect the new bot
+        await updateUserData();
+        // Reset the form
         setBotName('');
         setSelectedFile(null);
         setDocumentLink('');
-        alert('Bot created successfully!');
+        toast.success('Bot created successfully!');
       }
     } catch (error: any) {
       console.error('Error creating bot:', error);
       const message = error.response?.data?.message || 'Failed to create bot';
-      alert(message);
+      toast.error(message);
     } finally {
       setIsCreating(false);
     }
   };
 
-  const handleDelete = (botId: string) => {
-    // TODO: Implement bot deletion API call
-    console.log('Bot deleted:', botId);
-    setDeleteConfirm(null);
+  const handleDelete = async (botId: string) => {
+    try {
+      setIsDeleting(true);
+      // Call the delete bot API
+      const response = await axios.get(`http://localhost:3000/api/v2/bot/delete/${botId}`, {
+        withCredentials: true,
+      });
+
+      if (response.data.success) {
+        console.log('Bot deleted successfully:', response.data.message);
+        // Update user data to reflect the deletion
+        await updateUserData();
+        toast.success('Bot deleted successfully!');
+      }
+    } catch (error: any) {
+      console.error('Error deleting bot:', error);
+      const message = error.response?.data?.message || 'Failed to delete bot';
+      toast.error(message);
+    } finally {
+      setIsDeleting(false);
+      setDeleteConfirm(null);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -111,7 +140,7 @@ export default function GenerateBot() {
     });
   };
 
-  const canCreateBot = user.bots ? user.bots.length < (user.plan === 'FREE' ? 2 : 10) : true;
+  const canCreateBot = user.bots ? user.bots.length < user.stats.botsLimit : true;
 
   return (
     <div>
@@ -129,7 +158,7 @@ export default function GenerateBot() {
         {!canCreateBot && (
           <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6">
             <p className="text-red-300 text-sm">
-              You've reached the maximum number of bots for your {user.plan} plan. 
+              You've reached the maximum number of bots for your {user.plan.currentPlan} plan. 
               <Link to="/dashboard/billing" className="text-red-400 hover:text-red-300 underline ml-1">
                 Upgrade to create more bots.
               </Link>
@@ -259,7 +288,7 @@ export default function GenerateBot() {
         
         {user.bots && user.bots.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {user.bots.map((bot) => (
+            {user.bots.map((bot: any) => (
               <div key={bot.id} className="bg-white/5 rounded-lg border border-gray-700 p-6 hover:border-blue-500/30 transition-all">
                 <div className="flex items-start justify-between mb-4">
                   <Bot className="h-8 w-8 text-blue-400" />
@@ -299,23 +328,25 @@ export default function GenerateBot() {
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-gray-900 rounded-xl border border-red-500/30 p-6 max-w-md mx-4">
-            <h3 className="text-lg font-semibold text-white mb-4">Delete Bot</h3>
-            <p className="text-gray-300 mb-6">
-              Are you sure you want to delete this bot? This action cannot be undone.
-            </p>
+                  <div className="bg-gray-900 rounded-xl border border-red-500/30 p-6 max-w-md mx-4">
+          <h3 className="text-lg font-semibold text-white mb-4">Delete Bot</h3>
+          <p className="text-gray-300 mb-6">
+            Are you sure you want to delete <strong>{user.bots?.find((b: any) => b.id === deleteConfirm)?.name}</strong>? This action cannot be undone.
+          </p>
             <div className="flex space-x-3">
               <button
                 onClick={() => setDeleteConfirm(null)}
-                className="flex-1 px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors"
+                disabled={isDeleting}
+                className="flex-1 px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleDelete(deleteConfirm)}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                disabled={isDeleting}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Delete
+                {isDeleting ? 'Deleting...' : 'Delete'}
               </button>
             </div>
           </div>

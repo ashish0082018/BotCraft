@@ -4,6 +4,7 @@ import { Mail, Lock, Bot } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { setauthUserDetail } from '../../redux/userSlice';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 interface SignInProps {
   onSignIn: (email: string, password: string) => void;
@@ -29,13 +30,15 @@ export default function SignIn({ onSignIn }: SignInProps) {
       });
       
       if (response.data.success) {
-        console.log('Signed in successfully!');
-        dispatch(setauthUserDetail(response.data.user));
+        
+        toast.success('Signed in successfully!');
+        dispatch(setauthUserDetail(response.data.dashboardData));
         navigate('/dashboard');
       }
     } catch (err: any) {
       const message = err.response?.data?.message || 'Something went wrong';
-      console.error(message);
+      
+      toast.error(message);
     } finally {
       setLoading(false);
     }

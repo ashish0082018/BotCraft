@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
 import Landing from './components/Landing';
 import Docs from './components/Docs';
@@ -66,6 +67,29 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen font-inter">
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#1f2937',
+              color: '#fff',
+              border: '1px solid #374151',
+            },
+            success: {
+              style: {
+                background: '#065f46',
+                border: '1px solid #10b981',
+              },
+            },
+            error: {
+              style: {
+                background: '#7f1d1d',
+                border: '1px solid #ef4444',
+              },
+            },
+          }}
+        />
         <Navbar />
         
         <Routes>
