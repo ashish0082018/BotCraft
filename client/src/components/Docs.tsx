@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Check, Copy, MessageCircle, Send, Menu, X, Code, Terminal } from 'lucide-react';
 
 // API base URL from environment variable
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE_URL = 'https://botcraft-k4ri.onrender.com';
 
 export default function Docs() {
   const [activeTab, setActiveTab] = useState('sdk');
