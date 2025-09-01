@@ -20,6 +20,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.8.2",
     "redux-persist": "^6.0.0",
+    "server": "file:..",
     "tailwindcss": "^4.1.12"
   },
   "devDependencies": {

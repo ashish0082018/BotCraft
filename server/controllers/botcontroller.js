@@ -17,12 +17,12 @@ dotenv.config();
 // Initialize Cohere Embeddings
 const embeddings = new CohereEmbeddings({
     model: "embed-english-v3.0",
-    apiKey: process.env.COHERE_API_KEY, // Best practice is to use .env file
+    apiKey: process.env.COHERE_API_KEY, 
   });
   
   // Initialize Pinecone Client
   const pinecone = new PineconeClient({
-    apiKey: process.env.PINECONE_API_KEY, // Best practice is to use .env file
+    apiKey: process.env.PINECONE_API_KEY, 
   });
   const pineconeIndex = pinecone.Index("careerstack-chat-bot"); // Use your index name
   
