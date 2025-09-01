@@ -1,30 +1,144 @@
 import React, { useState } from 'react';
-import { Check, Copy, MessageCircle, Send, Menu, X } from 'lucide-react';
+import { Check, Copy, MessageCircle, Send, Menu, X, Code, Terminal } from 'lucide-react';
 
 export default function Docs() {
   const [activeTab, setActiveTab] = useState('sdk');
   const [demoMessage, setDemoMessage] = useState('');
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('javascript');
 
   const sidebarItems = [
     {
       title: 'Integrate with SDK',
       items: [
-        { id: 'sdk', label: 'Example Usage' },
+        { id: 'sdk', label: 'React Integration' },
         { id: 'ui-demo', label: 'UI Demo' }
       ]
     },
     {
       title: 'Integrate with API',
       items: [
-        { id: 'api', label: 'Example Request' },
-        { id: 'custom-ui', label: 'Custom UI Integration' }
+        { id: 'api', label: 'API Request' },
+        { id: 'code-examples', label: 'Code Examples' }
       ]
     }
   ];
 
+  const languageOptions = [
+    { id: 'javascript', label: 'JavaScript' },
+    { id: 'python', label: 'Python' },
+    { id: 'curl', label: 'cURL' },
+    { id: 'react', label: 'React' },
+  ];
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+  };
+
+  const renderCodeExample = () => {
+    switch (selectedLanguage) {
+      case 'javascript':
+        return `// Using fetch API
+async function askBot(question) {
+  const response = await fetch('http://localhost:3000/api/v/bot', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer YOUR_API_KEY',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ question })
+  });
+  
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  
+  return response.json();
+}
+
+// Example usage
+askBot('How do I use this?')
+  .then(data => console.log(data))
+  .catch(error => console.error('Error:', error));`;
+      
+      case 'python':
+        return `import requests
+
+def ask_bot(question):
+    url = "http://localhost:3000/api/v/bot"
+    headers = {
+        "Authorization": "Bearer YOUR_API_KEY",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "question": question
+    }
+    
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()
+    return response.json()
+
+# Example usage
+response = ask_bot("How do I use this?")
+print(response)`;
+      
+      case 'curl':
+        return `curl -X POST http://localhost:3000/api/v/bot \\
+  -H "Authorization: Bearer YOUR_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "question": "How do I use this?"
+  }'`;
+      
+      case 'react':
+        return `import React, { useState } from 'react';
+
+function BotIntegration() {
+  const [question, setQuestion] = useState('');
+  const [response, setResponse] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const askQuestion = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('http://localhost:3000/api/v/bot', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer YOUR_API_KEY',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ question })
+      });
+      
+      const data = await res.json();
+      setResponse(data);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <input 
+        value={question} 
+        onChange={(e) => setQuestion(e.target.value)}
+        placeholder="Ask a question..."
+      />
+      <button onClick={askQuestion} disabled={loading}>
+        {loading ? 'Asking...' : 'Ask'}
+      </button>
+      {response && <div>{JSON.stringify(response)}</div>}
+    </div>
+  );
+}
+
+export default BotIntegration;`;
+      
+      default:
+        return '';
+    }
   };
 
   return (
@@ -95,24 +209,78 @@ export default function Docs() {
           {/* Content */}
           <div className="flex-1">
             <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-4 sm:p-6 lg:p-8">
+              {/* SDK Integration */}
               {activeTab === 'sdk' && (
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-white mb-4 sm:mb-6">SDK Integration</h1>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-white mb-4 sm:mb-6">React SDK Integration</h1>
                   <p className="text-gray-300 mb-4 sm:mb-6 text-sm sm:text-base">
-                    Embed the BotCraft chatbot widget directly into your website using our CDN script.
+                    Easily integrate the BotCraft chatbot into your React application with our component.
                   </p>
                   
-                  <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">Installation</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">React Component</h3>
                   <div className="bg-gray-900/80 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 relative group">
-                    <code className="text-green-400 text-xs sm:text-sm">
-{`<script 
-  src="http://localhost:3000/api/v2/bot/widget.js" 
-  data-api-key="sa-74e0e564-05e6-428f-9620-c949b3d5e242" 
-  defer>
-</script>`}
+                    <code className="text-green-400 text-xs sm:text-sm whitespace-pre">
+{`import React, { useEffect } from 'react';
+
+const BotcraftWidget = ({ apiKey }) => {
+  useEffect(() => {
+    if (document.getElementById('botcraft-widget-script')) {
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.id = 'botcraft-widget-script';
+    script.src = 'http://localhost:3000/api/v2/bot/widget.js';
+    script.setAttribute('data-api-key', apiKey);
+    script.defer = true;
+    
+    document.body.appendChild(script);
+
+    return () => {
+      const existingScript = document.getElementById('botcraft-widget-script');
+      if (existingScript) {
+        document.body.removeChild(existingScript);
+      }
+      
+      const icon = document.getElementById('botcraft-chat-icon');
+      const widget = document.getElementById('botcraft-widget-container');
+      if (icon) icon.remove();
+      if (widget) widget.remove();
+    };
+  }, [apiKey]);
+
+  return null;
+};
+
+export default BotcraftWidget;`}
                     </code>
                     <button
-                      onClick={() => copyToClipboard(`<script src="http://localhost:3000/api/v2/bot/widget.js" data-api-key="sa-74e0e564-05e6-428f-9620-c949b3d5e242" defer></script>`)}
+                      onClick={() => copyToClipboard(`import React, { useEffect } from 'react';\n\nconst BotcraftWidget = ({ apiKey }) => {\n  useEffect(() => {\n    if (document.getElementById('botcraft-widget-script')) {\n      return;\n    }\n\n    const script = document.createElement('script');\n    script.id = 'botcraft-widget-script';\n    script.src = 'http://localhost:3000/api/v2/bot/widget.js';\n    script.setAttribute('data-api-key', apiKey);\n    script.defer = true;\n    \n    document.body.appendChild(script);\n\n    return () => {\n      const existingScript = document.getElementById('botcraft-widget-script');\n      if (existingScript) {\n        document.body.removeChild(existingScript);\n      }\n      \n      const icon = document.getElementById('botcraft-chat-icon');\n      const widget = document.getElementById('botcraft-widget-container');\n      if (icon) icon.remove();\n      if (widget) widget.remove();\n    };\n  }, [apiKey]);\n\n  return null;\n};\n\nexport default BotcraftWidget;`)}
+                      className="absolute top-2 right-2 p-2 text-gray-400 hover:text-blue-400 transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </button>
+                  </div>
+                  
+                  <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">Usage in Your App</h3>
+                  <div className="bg-gray-900/80 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 relative group">
+                    <code className="text-green-400 text-xs sm:text-sm whitespace-pre">
+{`import React from 'react';
+import BotcraftWidget from './components/BotcraftWidget';
+
+function App() {
+  return (
+    <div className="App">
+      {/* Your app content */}
+      <BotcraftWidget apiKey="sa-3f7011c6-f958-4d0b-aafd-1d9e23359683" />
+    </div>
+  );
+}
+
+export default App;`}
+                    </code>
+                    <button
+                      onClick={() => copyToClipboard(`import React from 'react';\nimport BotcraftWidget from './components/BotcraftWidget';\n\nfunction App() {\n  return (\n    <div className="App">\n      {/* Your app content */}\n      <BotcraftWidget apiKey="sa-3f7011c6-f958-4d0b-aafd-1d9e23359683" />\n    </div>\n  );\n}\n\nexport default App;`)}
                       className="absolute top-2 right-2 p-2 text-gray-400 hover:text-blue-400 transition-colors opacity-0 group-hover:opacity-100"
                     >
                       <Copy className="h-4 w-4" />
@@ -121,7 +289,7 @@ export default function Docs() {
                   
                   <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 sm:p-4">
                     <p className="text-blue-300 text-xs sm:text-sm">
-                      <strong>Note:</strong> Replace the API key with your actual bot's API key from your dashboard.
+                      <strong>Note:</strong> Replace the API key with your actual bot's API key from your dashboard. The widget will automatically appear as a chat icon in your application.
                     </p>
                   </div>
                 </div>
@@ -176,69 +344,82 @@ export default function Docs() {
 
               {activeTab === 'api' && (
                 <div>
-                  <h1 className="text-3xl font-bold text-white mb-6">API Integration</h1>
-                  <p className="text-gray-300 mb-6">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-white mb-4 sm:mb-6">API Integration</h1>
+                  <p className="text-gray-300 mb-4 sm:mb-6 text-sm sm:text-base">
                     Use our REST API to build your own custom chatbot interface.
                   </p>
                   
-                  <h3 className="text-xl font-semibold text-white mb-4">Example Request</h3>
-                  <div className="bg-gray-900/80 rounded-lg p-4 mb-6 relative group">
-                    <code className="text-green-400 text-sm whitespace-pre">
+                  <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">API Request</h3>
+                  <div className="bg-gray-900/80 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 relative group">
+                    <code className="text-green-400 text-xs sm:text-sm whitespace-pre">
 {`POST http://localhost:3000/api/v/bot
 Headers: { 
   "Authorization": "Bearer <API_KEY>",
   "Content-Type": "application/json"
 }
 Body: { 
-  "question": "College name and location ?" 
+  "question": "Your question here" 
 }`}
                     </code>
                     <button
-                      onClick={() => copyToClipboard('POST http://localhost:3000/api/v/bot\nHeaders: { "Authorization": "Bearer <API_KEY>", "Content-Type": "application/json" }\nBody: { "question": "College name and location ?" }')}
+                      onClick={() => copyToClipboard('POST http://localhost:3000/api/v/bot\nHeaders: { "Authorization": "Bearer <API_KEY>", "Content-Type": "application/json" }\nBody: { "question": "Your question here" }')}
                       className="absolute top-2 right-2 p-2 text-gray-400 hover:text-blue-400 transition-colors opacity-0 group-hover:opacity-100"
                     >
                       <Copy className="h-4 w-4" />
                     </button>
                   </div>
                   
-                  <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-                    <p className="text-yellow-300 text-sm">
+                  <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 sm:p-4">
+                    <p className="text-yellow-300 text-xs sm:text-sm">
                       <strong>Important:</strong> Your API Key can be found at Dashboard → Get Chatbot Key.
                     </p>
                   </div>
                 </div>
               )}
 
-              {activeTab === 'custom-ui' && (
+              {activeTab === 'code-examples' && (
                 <div>
-                  <h1 className="text-3xl font-bold text-white mb-6">Custom UI Integration</h1>
-                  <p className="text-gray-300 mb-6">
-                    With our API, you have complete freedom to build your own custom chatbot UI that matches your brand perfectly.
+                  <h1 className="text-2xl sm:text-3xl font-bold text-white mb-4 sm:mb-6">API Code Examples</h1>
+                  <p className="text-gray-300 mb-4 sm:mb-6 text-sm sm:text-base">
+                    Use our API directly in your client-side code with these examples.
                   </p>
                   
-                  <h3 className="text-xl font-semibold text-white mb-4">Benefits</h3>
-                  <ul className="space-y-2 text-gray-300 mb-6">
-                    <li className="flex items-center">
-                      <Check className="h-4 w-4 text-green-400 mr-2" />
-                      Complete design control
-                    </li>
-                    <li className="flex items-center">
-                      <Check className="h-4 w-4 text-green-400 mr-2" />
-                      Custom branding and styling
-                    </li>
-                    <li className="flex items-center">
-                      <Check className="h-4 w-4 text-green-400 mr-2" />
-                      Advanced conversation flows
-                    </li>
-                    <li className="flex items-center">
-                      <Check className="h-4 w-4 text-green-400 mr-2" />
-                      Integration with existing systems
-                    </li>
-                  </ul>
+                  <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">Language Examples</h3>
                   
-                  <p className="text-gray-300">
-                    Use the API endpoint provided in your dashboard to send questions and receive intelligent responses based on your trained documents.
-                  </p>
+                  {/* Language Selector */}
+                  <div className="flex space-x-2 mb-4 overflow-x-auto py-2">
+                    {languageOptions.map((language) => (
+                      <button
+                        key={language.id}
+                        onClick={() => setSelectedLanguage(language.id)}
+                        className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                          selectedLanguage === language.id
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        }`}
+                      >
+                        {language.label}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  <div className="bg-gray-900/80 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 relative group">
+                    <code className="text-green-400 text-xs sm:text-sm whitespace-pre">
+                      {renderCodeExample()}
+                    </code>
+                    <button
+                      onClick={() => copyToClipboard(renderCodeExample())}
+                      className="absolute top-2 right-2 p-2 text-gray-400 hover:text-blue-400 transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </button>
+                  </div>
+                  
+                  <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 sm:p-4">
+                    <p className="text-blue-300 text-xs sm:text-sm">
+                      <strong>Note:</strong> Replace YOUR_API_KEY with your actual API key. For client-side implementations, consider using environment variables to keep your API key secure.
+                    </p>
+                  </div>
                 </div>
               )}
             </div>

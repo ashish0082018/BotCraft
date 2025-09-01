@@ -205,7 +205,7 @@ export default function Settings() {
               <button
                 onClick={() => {
                   // TODO: Implement account deletion API call
-                  console.log('Account deleted');
+                
                   toast.success('Account deleted successfully');
                   setShowDeleteConfirm(false);
                 }}

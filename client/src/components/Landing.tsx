@@ -93,7 +93,7 @@ export default function Landing() {
             <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 sm:p-8 border border-blue-500/20 hover:border-blue-400/40 transition-all">
               <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">Free Plan</h3>
               <p className="text-gray-400 mb-6">Perfect for getting started</p>
-              <div className="text-3xl sm:text-4xl font-bold text-white mb-6">$0<span className="text-base sm:text-lg font-normal text-gray-400">/month</span></div>
+              <div className="text-3xl sm:text-4xl font-bold text-white mb-6">₹0<span className="text-base sm:text-lg font-normal text-gray-400">/month</span></div>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-center text-gray-300 text-sm sm:text-base">
                   <Check className="h-4 w-4 sm:h-5 sm:w-5 text-green-400 mr-3 flex-shrink-0" />
@@ -101,7 +101,7 @@ export default function Landing() {
                 </li>
                 <li className="flex items-center text-gray-300 text-sm sm:text-base">
                   <Check className="h-4 w-4 sm:h-5 sm:w-5 text-green-400 mr-3 flex-shrink-0" />
-                  1,000 queries per month
+                  1,000 queries
                 </li>
                 <li className="flex items-center text-gray-300 text-sm sm:text-base">
                   <Check className="h-4 w-4 sm:h-5 sm:w-5 text-green-400 mr-3 flex-shrink-0" />
@@ -137,7 +137,7 @@ export default function Landing() {
                 </li>
                 <li className="flex items-center text-gray-300 text-sm sm:text-base">
                   <Check className="h-4 w-4 sm:h-5 sm:w-5 text-green-400 mr-3 flex-shrink-0" />
-                  50,000 queries per month
+                  15000 queries 
                 </li>
                 <li className="flex items-center text-gray-300 text-sm sm:text-base">
                   <Check className="h-4 w-4 sm:h-5 sm:w-5 text-green-400 mr-3 flex-shrink-0" />
@@ -165,19 +165,84 @@ export default function Landing() {
 
       {/* Footer */}
       <footer className="py-12 px-4 border-t border-blue-500/20">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="flex items-center justify-center space-x-2 mb-6">
-            <Bot className="h-8 w-8 text-blue-400" />
-            <span className="text-2xl font-bold text-white">BotCraft</span>
+        <div className="max-w-7xl mx-auto">
+          {/* Main Footer Content */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            {/* Company Info */}
+            <div className="md:col-span-2">
+              <div className="flex items-center space-x-2 mb-4">
+                <Bot className="h-8 w-8 text-blue-400" />
+                <span className="text-2xl font-bold text-white">BotCraft</span>
+              </div>
+              <p className="text-gray-400 text-sm sm:text-base mb-4 max-w-md">
+                Transform your documents into intelligent conversational experiences. 
+                Build AI-powered chatbots in minutes with our advanced platform.
+              </p>
+              <div className="flex space-x-4">
+                <a 
+                  href="https://github.com/ashish0082018" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-blue-300 transition-colors"
+                >
+                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h4 className="text-white font-semibold mb-4">Quick Links</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#features" className="text-gray-400 hover:text-blue-300 transition-colors">Features</a></li>
+                <li><a href="#pricing" className="text-gray-400 hover:text-blue-300 transition-colors">Pricing</a></li>
+                <li><Link to="/docs" className="text-gray-400 hover:text-blue-300 transition-colors">Documentation</Link></li>
+                <li><Link to="/signin" className="text-gray-400 hover:text-blue-300 transition-colors">Sign In</Link></li>
+              </ul>
+            </div>
+
+            {/* Developer Contact */}
+            <div>
+              <h4 className="text-white font-semibold mb-4">Developer Contact</h4>
+              <div className="space-y-3 text-sm">
+                <div className="flex items-center space-x-2">
+                  <span className="text-gray-400">Developer:</span>
+                  <span className="text-white">Ashish Verma</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-gray-400">GitHub:</span>
+                  <a 
+                    href="https://github.com/ashish0082018" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:text-blue-300 transition-colors"
+                  >
+                    @ashish0082018
+                  </a>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-gray-400">Location:</span>
+                  <span className="text-white">India 🇮🇳</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <p className="text-gray-400 text-sm sm:text-base mb-6">
-            Transform your documents into intelligent conversational experiences.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-8 text-sm text-gray-400">
-            <a href="#features" className="hover:text-blue-300 transition-colors">Features</a>
-            <a href="#pricing" className="hover:text-blue-300 transition-colors">Pricing</a>
-            <Link to="/docs" className="hover:text-blue-300 transition-colors">Documentation</Link>
-            <Link to="/signin" className="hover:text-blue-300 transition-colors">Sign In</Link>
+
+          {/* Bottom Footer */}
+          <div className="pt-8 border-t border-blue-500/20 text-center">
+            <p className="text-gray-400 text-sm">
+              © 2025 BotCraft. Built with ❤️ by{' '}
+              <a 
+                href="https://github.com/ashish0082018" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300 transition-colors font-medium"
+              >
+                Ashish Verma
+              </a>
+            </p>
           </div>
         </div>
       </footer>

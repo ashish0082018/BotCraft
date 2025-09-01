@@ -21,7 +21,7 @@ const isauthenticated= async (req,res,next)=>{
     }
     
 req.id=decode.userid
-console.log(req.id);
+
 next();
 
     }

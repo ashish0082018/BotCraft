@@ -26,7 +26,7 @@ export default function Navbar() {
       // Navigate to home page
       navigate('/');
       
-      console.log('Logged out successfully');
+    
     } catch (error) {
       console.error('Logout failed:', error);
       // Still clear the store even if API call fails
@@ -176,12 +176,9 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
-                  <a href="#features" className="block text-sm font-medium text-gray-300 hover:text-blue-300 transition-colors" onClick={() => setShowMobileMenu(false)}>
-                    Features
-                  </a>
-                  <a href="#pricing" className="block text-sm font-medium text-gray-300 hover:text-blue-300 transition-colors" onClick={() => setShowMobileMenu(false)}>
-                    Pricing
-                  </a>
+                  <a href="/dashboard" className="text-sm font-medium text-gray-300 hover:text-blue-300 transition-colors">
+                 Dashboard
+                </a>
                   
                   <div className="border-t border-gray-700 pt-4">
                     <div className="flex items-center space-x-2 text-gray-300 mb-4">

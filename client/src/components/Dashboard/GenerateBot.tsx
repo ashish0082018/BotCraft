@@ -90,7 +90,7 @@ export default function GenerateBot() {
       });
 
       if (response.data.success) {
-        console.log('Bot created successfully:', response.data.bot);
+        
         // Update user data to reflect the new bot
         await updateUserData();
         // Reset the form
@@ -117,7 +117,7 @@ export default function GenerateBot() {
       });
 
       if (response.data.success) {
-        console.log('Bot deleted successfully:', response.data.message);
+     
         // Update user data to reflect the deletion
         await updateUserData();
         toast.success('Bot deleted successfully!');

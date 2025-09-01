@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
@@ -15,7 +15,7 @@ import Billing from './components/Dashboard/Billing';
 import Settings from './components/Dashboard/Settings';
 import ProtectedRoute from './components/ProtectedRoute';
 import type { Bot } from './types/';
-import { dummyUser } from './utils/dummyData';
+
 
 function App() {
   const authUser = useSelector((state: any) => state.user.authUserDetails);
@@ -29,44 +29,10 @@ function App() {
     // This is now handled in the SignUp component
   };
 
-  const handleSignOut = () => {
-    // This will be handled by Redux
-  };
-
-  const handleCreateBot = (name: string, file?: File, link?: string) => {
-    if (!authUser) return;
-
-    const newBot: Bot = {
-      id: `bot-${Date.now()}`,
-      name,
-      createdAt: new Date().toISOString(),
-      userId: authUser.id
-    };
-
-    // This would need to be handled by Redux or API call
-    console.log('Bot created:', newBot);
-  };
-
-  const handleDeleteBot = (botId: string) => {
-    if (!authUser) return;
-
-    // This would need to be handled by Redux or API call
-    console.log('Bot deleted:', botId);
-  };
-
-  const handleUpdatePassword = (currentPassword: string, newPassword: string) => {
-    // Simulate password update
-    console.log('Password updated');
-  };
-
-  const handleDeleteAccount = () => {
-    // This would need to be handled by Redux
-    console.log('Account deleted');
-  };
-
   return (
     <Router>
       <div className="min-h-screen font-inter">
+     
         <Toaster
           position="top-right"
           toastOptions={{

@@ -556,117 +556,159 @@ export const toggleBotStatus = async (req, res) => {
 
 // controllers/botcontroller.js
 
+// controllers/botcontroller.js
+
 export const serveWidget = (req, res) => {
-  // Step 1: Server par HTML aur CSS ko strings mein prepare karein
-  const widgetHTML = `
-      <div id="botcraft-chat-icon" class="chat-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path></svg>
-      </div>
-      <div id="botcraft-widget-container">
-          <div class="chat-widget">
-              <div class="chat-header">
-                  <h3 class="header-title"></h3> 
-                  <button class="close-btn">&times;</button>
-              </div>
-              <div class="chat-body">
-                  <div class="message assistant initial-message"></div>
-              </div>
-              <div class="chat-footer">
-                  <form id="chat-form">
-                      <input type="text" id="chat-input" placeholder="Ask a question..." autocomplete="off" required>
-                      <button type="submit">Send</button>
-                  </form>
-              </div>
-          </div>
-      </div>
-  `;
+    // Step 1: Server par HTML aur CSS ko strings mein prepare karein
+    const widgetHTML = `
+        <div id="botcraft-chat-icon" class="chat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path></svg>
+        </div>
+        <div id="botcraft-widget-container">
+            <div class="chat-widget">
+                <div class="chat-header">
+                    <h3 class="header-title"></h3> 
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="chat-body">
+                    <div class="message assistant initial-message"></div>
+                </div>
+                <div class="chat-footer">
+                    <form id="chat-form">
+                        <input type="text" id="chat-input" placeholder="Ask a question..." autocomplete="off" required>
+                        <button type="submit">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    `;
 
-  const widgetCSS = `
-      .chat-widget, .chat-icon { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-      .chat-icon { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background-color: var(--primary-color, #007bff); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9998; transition: transform 0.2s ease-in-out; }
-      .chat-widget { position: fixed; bottom: 90px; right: 20px; width: 350px; max-width: calc(100% - 40px); height: 500px; background-color: white; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; transform: scale(0); transform-origin: bottom right; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; }
-      .chat-widget.open { transform: scale(1); }
-      .chat-header { background: var(--primary-color, #007bff); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-      .chat-header h3 { margin: 0; font-size: 18px; font-weight: 600; }
-      .message.user { background-color: var(--primary-color, #007bff); color: white; align-self: flex-end; border-bottom-right-radius: 5px; }
-      #chat-input:focus { border-color: var(--primary-color, #007bff); outline: none; }
-      #chat-form button { background-color: var(--primary-color, #007bff); }
-      /* Baaki ka CSS same rahega... */
-  `;
+    // === COMPLETE CSS STARTS HERE ===
+    const widgetCSS = `
+        .chat-widget, .chat-icon { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .chat-icon { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background-color: var(--primary-color, #007bff); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9998; transition: transform 0.2s ease-in-out; }
+        .chat-icon:hover { transform: scale(1.1); }
+        .chat-widget { position: fixed; bottom: 90px; right: 20px; width: 350px; max-width: calc(100% - 40px); height: 500px; background-color: white; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; transform: scale(0); transform-origin: bottom right; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; }
+        .chat-widget.open { transform: scale(1); }
+        .chat-header { background: var(--primary-color, #007bff); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .chat-header h3 { margin: 0; font-size: 18px; font-weight: 600; }
+        .chat-header .close-btn { background: none; border: none; color: white; opacity: 0.8; font-size: 24px; cursor: pointer; transition: opacity 0.2s; }
+        .chat-body { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background-color: #f9f9f9; }
+        .message { padding: 10px 15px; border-radius: 18px; max-width: 85%; line-height: 1.5; word-wrap: break-word; }
+        .message.user { background-color: var(--primary-color, #007bff); color: white; align-self: flex-end; border-bottom-right-radius: 5px; }
+        .message.assistant { background-color: #e9e9eb; color: #333; align-self: flex-start; border-bottom-left-radius: 5px; }
+        .message.loading { align-self: flex-start; background: #e9e9eb; padding: 12px 15px; border-radius: 18px; }
+        .message.loading span { display: inline-block; width: 8px; height: 8px; background-color: #999; border-radius: 50%; animation: bounce 1.2s infinite ease-in-out; }
+        .message.loading span:nth-child(2) { animation-delay: -0.2s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+        .chat-footer { padding: 10px; border-top: 1px solid #ddd; background: #fff; }
+        #chat-form { display: flex; align-items: center; }
+        #chat-input { flex-grow: 1; border: 1px solid #ccc; border-radius: 20px; padding: 10px 15px; font-size: 16px; transition: border-color 0.2s; }
+        #chat-input:focus { border-color: var(--primary-color, #007bff); outline: none; }
+        #chat-form button { background-color: var(--primary-color, #007bff); border: none; color: white; border-radius: 8px; width: 50px; height: 40px; margin-left: 10px; cursor: pointer; font-weight: bold; display: flex; justify-content: center; align-items: center; transition: background-color 0.2s; }
+    `;
+    // === COMPLETE CSS ENDS HERE ===
 
-  // Step 2: Ek final script banayein jo in strings ko browser mein use karega
-  const widgetScript = `
+    const widgetScript = `
 (async function() {
-  const scriptTag = document.currentScript;
-  const apiKey = scriptTag.getAttribute('data-api-key');
-  if (!apiKey) return console.error("Botcraft API key is missing.");
+    const scriptTag = document.currentScript;
+    const apiKey = scriptTag.getAttribute('data-api-key');
+    if (!apiKey) return console.error("Botcraft API key is missing.");
 
-  let config = {
-      primaryColor: '#007bff',
-      headerText: 'Chat with AI',
-      initialMessage: 'Hi! How can I help you today?'
-  };
+    let config = {
+        primaryColor: '#007bff',
+        headerText: 'Chat with AI',
+        initialMessage: 'Hi! How can I help you today?'
+    };
 
-  try {
-      // Widget "phone home" karke apni settings poochta hai
-      const response = await fetch(\`http://localhost:3000/api/v2/widget-config?apiKey=\${apiKey}\`);
-      if (response.ok) {
-          const fetchedConfig = await response.json();
-          config = { ...config, ...fetchedConfig };
-      }
-  } catch (error) {
-      console.error("Could not load bot configuration.", error);
-  }
+    try {
+        const response = await fetch(\`http://localhost:3000/api/v2/bot/widget-config?apiKey=\${apiKey}\`);
+        if (response.ok) {
+            const fetchedConfig = await response.json();
+            config = { ...config, ...fetchedConfig };
+        }
+    } catch (error) {
+        console.error("Could not load bot configuration.", error);
+    }
 
-  const finalHTML = \`${widgetHTML}\`;
-  const finalCSS = \`${widgetCSS}\`;
+    const finalHTML = \`${widgetHTML}\`;
+    const finalCSS = \`${widgetCSS}\`;
 
-  document.body.insertAdjacentHTML('beforeend', finalHTML);
-  const styleTag = document.createElement('style');
-  styleTag.innerHTML = finalCSS;
-  document.head.appendChild(styleTag);
-  
-  const widgetContainer = document.getElementById('botcraft-widget-container');
-  widgetContainer.style.setProperty('--primary-color', config.primaryColor);
-  widgetContainer.querySelector('.header-title').textContent = config.headerText;
-  widgetContainer.querySelector('.initial-message').textContent = config.initialMessage;
-  
-  // Baaki saare event listeners aur API call logic
-  const chatIcon = document.getElementById('botcraft-chat-icon');
-  const chatWidget = widgetContainer.querySelector('.chat-widget');
-  const closeBtn = widgetContainer.querySelector('.close-btn');
-  const chatForm = document.getElementById('chat-form');
-  // ... etc.
+    document.body.insertAdjacentHTML('beforeend', finalHTML);
+    const styleTag = document.createElement('style');
+    styleTag.innerHTML = finalCSS;
+    document.head.appendChild(styleTag);
+    
+    // Apply the primary color to both the widget container and the chat icon
+    const widgetContainer = document.getElementById('botcraft-widget-container');
+    const chatIcon = document.getElementById('botcraft-chat-icon');
+    
+    // Set CSS custom property for the entire widget
+    document.documentElement.style.setProperty('--primary-color', config.primaryColor);
+    
+    // Also set it specifically on the chat icon for better compatibility
+    chatIcon.style.backgroundColor = config.primaryColor;
+    
+    widgetContainer.querySelector('.header-title').textContent = config.headerText;
+    widgetContainer.querySelector('.initial-message').textContent = config.initialMessage;
+    
+    // === COMPLETE JAVASCRIPT LOGIC STARTS HERE ===
+    const chatWidget = widgetContainer.querySelector('.chat-widget');
+    const closeBtn = widgetContainer.querySelector('.close-btn');
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const chatBody = widgetContainer.querySelector('.chat-body');
 
-  chatIcon.addEventListener('click', () => chatWidget.classList.toggle('open'));
-  closeBtn.addEventListener('click', () => chatWidget.classList.remove('open'));
-  
-  chatForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const userMessage = chatInput.value.trim();
-      if (!userMessage) return;
-      appendMessage(userMessage, 'user');
-      chatInput.value = '';
-      showLoadingIndicator();
-      try {
-          const response = await fetch('http://localhost:8000/api/v1/chat', { 
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'Authorization': \`Bearer \${apiKey}\` },
-              body: JSON.stringify({ question: userMessage })
-          });
-          // ... (baaki ka fetch logic same rahega)
-      } catch (error) {
-         // ... (error handling same rahega)
-      }
-  });
+    chatIcon.addEventListener('click', () => chatWidget.classList.toggle('open'));
+    closeBtn.addEventListener('click', () => chatWidget.classList.remove('open'));
+    
+    chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const userMessage = chatInput.value.trim();
+        if (!userMessage) return;
+        appendMessage(userMessage, 'user');
+        chatInput.value = '';
+        showLoadingIndicator();
+        try {
+            const response = await fetch('http://localhost:3000/api/v/bot', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': \`Bearer \${apiKey}\` },
+                body: JSON.stringify({ question: userMessage })
+            });
+            removeLoadingIndicator();
+            if (!response.ok) throw new Error('API Error');
+            const data = await response.json();
+            appendMessage(data.answer, 'assistant');
+        } catch (error) {
+            removeLoadingIndicator();
+            appendMessage('Sorry, something went wrong.', 'assistant');
+        }
+    });
 
-  // appendMessage, showLoadingIndicator, etc. functions yahan aayenge
+    function appendMessage(text, type) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', type);
+        messageDiv.innerText = text; 
+        chatBody.appendChild(messageDiv);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+    function showLoadingIndicator() {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.classList.add('message', 'loading');
+        loadingDiv.innerHTML = \`<span></span><span></span><span></span>\`;
+        chatBody.appendChild(loadingDiv);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+    function removeLoadingIndicator() {
+        const loadingDiv = chatBody.querySelector('.loading');
+        if (loadingDiv) loadingDiv.remove();
+    }
+    // === COMPLETE JAVASCRIPT LOGIC ENDS HERE ===
 })();
-  `;
+    `;
 
-  // Final Step: Script ko browser mein bhej dein
-  res.setHeader('Content-Type', 'application/javascript');
-  res.send(widgetScript);
+    res.setHeader('Content-Type', 'application/javascript');
+    res.send(widgetScript);
 };
   
  

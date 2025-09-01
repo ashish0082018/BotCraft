@@ -198,7 +198,7 @@ export default function Billing() {
             <p className="text-gray-400 text-sm sm:text-base">
               {user.plan.currentPlan === 'FREE' 
                 ? `Up to ${user.stats.botsLimit} bots • ${user.plan.requestsLimit} API requests` 
-                : `Up to ${user.stats.botsLimit} bots • ${user.plan.requestsLimit} API requests`
+                : `Up to 10 bots • 15,000 API requests`
               }
             </p>
           </div>

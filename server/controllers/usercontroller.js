@@ -76,7 +76,7 @@ const fetchUserDashboardData = async (userId) => {
 export const signUp = async (req, res) => {
     try {
         const { name, email, password } = req.body;
-        console.log(req.body);
+       
         
         if (!name || !email || !password) {
             return res.status(401).json({
@@ -152,7 +152,7 @@ export  const signIn=async (req,res)=>{
         const dashboardData = await fetchUserDashboardData(loginuser.id);
         
         const token= jwt.sign({userid:loginuser.id},process.env.JWT_SECRET,{expiresIn:'1d'})
-        console.log("User info----",loginuser);
+      
         return res.cookie('token',token,{httpOnly:true,sameSite:'strict',maxAge:1*24*60*60*1000}).json({    
           success:true,
           dashboardData
