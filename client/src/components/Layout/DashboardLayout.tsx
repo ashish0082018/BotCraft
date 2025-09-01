@@ -25,8 +25,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   return (
+    // Is container mein pt-16 navbar ke liye jagah banata hai
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-blue-900 pt-16">
-      <div className="flex">
+      
+      {/* CHANGE 1: Is flex container ko screen ki bachi hui height di gayi hai */}
+      <div className="flex h-[calc(100vh-4rem)]">
+        
         {/* Mobile Sidebar Overlay */}
         {showSidebar && (
           <div 
@@ -36,10 +40,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         )}
 
         {/* Sidebar */}
-        <div className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white/5 backdrop-blur-md border-r border-blue-500/20 transform transition-transform duration-300 ease-in-out ${
+        {/* CHANGE 2: Sidebar ki position aur height classes ko theek kiya gaya hai */}
+        <div className={`fixed lg:relative inset-y-0 left-0 z-50 w-64 bg-white/5 backdrop-blur-md border-r border-blue-500/20 transform transition-transform duration-300 ease-in-out lg:h-full ${
           showSidebar ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}>
-          <div className="p-6">
+          <div className="p-6 h-full overflow-y-auto">
             {/* Mobile close button */}
             <div className="flex justify-between items-center mb-6 lg:hidden">
               <h2 className="text-xl font-bold text-white">Menu</h2>
@@ -75,9 +80,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 overflow-y-auto">
           {/* Mobile header with menu button */}
-          <div className="lg:hidden p-4 border-b border-blue-500/20">
+          <div className="lg:hidden p-4 border-b border-blue-500/20 sticky top-0 bg-gray-900/50 backdrop-blur-md z-10">
             <button
               onClick={() => setShowSidebar(true)}
               className="text-gray-400 hover:text-white"

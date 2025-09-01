@@ -83,11 +83,9 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <a href="#features" className="text-sm font-medium text-gray-300 hover:text-blue-300 transition-colors">
-                  Features
-                </a>
-                <a href="#pricing" className="text-sm font-medium text-gray-300 hover:text-blue-300 transition-colors">
-                  Pricing
+               
+                <a href="/dashboard" className="text-sm font-medium text-gray-300 hover:text-blue-300 transition-colors">
+                 Dashboard
                 </a>
                 
                 {/* Profile Dropdown */}

@@ -311,7 +311,7 @@ export default function GenerateBot() {
                         to={`/dashboard/bot/${bot.id}`}
                         className="p-1.5 sm:p-2 text-blue-400 hover:text-blue-300 transition-colors"
                       >
-                        <Plus className="h-4 w-4" />
+                      <p className='text-sm'> View Details</p>
                       </Link>
                       <button
                         onClick={() => setDeleteConfirm(bot.id)}

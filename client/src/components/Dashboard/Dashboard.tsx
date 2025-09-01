@@ -23,14 +23,28 @@ export default function Dashboard() {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    if (!dateString) {
+      return 'Date not available';
+    }
+    
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return 'Date not available';
+      }
+      
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (error) {
+      return 'Date not available';
+    }
   };
 
-  const requestsProgress = (user.plan.requestsLeft / user.plan.requestsLimit) * 100;
+  // Calculate percentage of requests remaining
+  const requestsProgress = Math.min((user.plan.requestsLeft / user.plan.requestsLimit) * 100, 100);
 
   return (
     <div>
@@ -99,7 +113,7 @@ export default function Dashboard() {
           </div>
           <h3 className="text-base sm:text-lg font-semibold text-white mb-1">Account Created</h3>
           <p className="text-gray-400 text-xs sm:text-sm">
-            {formatDate(user.profile.createdAt)}
+            {formatDate(user.profile.memberSince)}
           </p>
         </div>
       </div>

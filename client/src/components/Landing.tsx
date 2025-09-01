@@ -129,7 +129,7 @@ export default function Landing() {
               </div>
               <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">Pro Plan</h3>
               <p className="text-gray-400 mb-6">For growing businesses</p>
-              <div className="text-3xl sm:text-4xl font-bold text-white mb-6">$29<span className="text-base sm:text-lg font-normal text-gray-400">/month</span></div>
+              <div className="text-3xl sm:text-4xl font-bold text-white mb-6">₹2,000<span className="text-base sm:text-lg font-normal text-gray-400">/month</span></div>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-center text-gray-300 text-sm sm:text-base">
                   <Check className="h-4 w-4 sm:h-5 sm:w-5 text-green-400 mr-3 flex-shrink-0" />

@@ -96,8 +96,95 @@ export default function BotDetails() {
 
   if (isLoadingDetails) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-white">Loading bot details...</div>
+      <div className="animate-pulse">
+        {/* Header Skeleton */}
+        <div className="mb-6 sm:mb-8">
+          <div className="h-8 sm:h-10 bg-gray-700/50 rounded-lg w-64 mb-2"></div>
+          <div className="h-4 sm:h-5 bg-gray-700/50 rounded w-48"></div>
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-8">
+          {/* Left Column Skeleton */}
+          <div className="space-y-4 sm:space-y-6">
+            {/* API Key Skeleton */}
+            <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-4 sm:p-6">
+              <div className="h-5 sm:h-6 bg-gray-700/50 rounded w-24 mb-3 sm:mb-4"></div>
+              <div className="h-12 sm:h-16 bg-gray-700/50 rounded-lg w-full mb-2"></div>
+              <div className="h-4 bg-gray-700/50 rounded w-80"></div>
+            </div>
+
+            {/* Bot Statistics Skeleton */}
+            <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-4 sm:p-6">
+              <div className="h-5 sm:h-6 bg-gray-700/50 rounded w-32 mb-3 sm:mb-4"></div>
+              <div className="space-y-2 sm:space-y-3">
+                <div className="flex justify-between items-center">
+                  <div className="h-4 bg-gray-700/50 rounded w-20"></div>
+                  <div className="h-4 bg-gray-700/50 rounded w-16"></div>
+                </div>
+                <div className="flex justify-between">
+                  <div className="h-4 bg-gray-700/50 rounded w-24"></div>
+                  <div className="h-4 bg-gray-700/50 rounded w-12"></div>
+                </div>
+                <div className="flex justify-between">
+                  <div className="h-4 bg-gray-700/50 rounded w-24"></div>
+                  <div className="h-4 bg-gray-700/50 rounded w-20"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Customization Skeleton */}
+            <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-4 sm:p-6">
+              <div className="h-5 sm:h-6 bg-gray-700/50 rounded w-36 mb-3 sm:mb-4"></div>
+              <div className="space-y-3 sm:space-y-4">
+                <div>
+                  <div className="h-4 bg-gray-700/50 rounded w-24 mb-2"></div>
+                  <div className="flex items-center space-x-2 sm:space-x-3">
+                    <div className="w-10 h-8 sm:w-12 sm:h-10 bg-gray-700/50 rounded"></div>
+                    <div className="flex-1 h-8 sm:h-10 bg-gray-700/50 rounded-lg"></div>
+                  </div>
+                </div>
+                <div>
+                  <div className="h-4 bg-gray-700/50 rounded w-20 mb-2"></div>
+                  <div className="h-8 sm:h-10 bg-gray-700/50 rounded-lg"></div>
+                </div>
+                <div>
+                  <div className="h-4 bg-gray-700/50 rounded w-28 mb-2"></div>
+                  <div className="h-20 sm:h-24 bg-gray-700/50 rounded-lg"></div>
+                </div>
+                <div className="h-10 sm:h-12 bg-gray-700/50 rounded-lg"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Chat Skeleton */}
+          <div className="bg-white rounded-xl shadow-xl overflow-hidden max-w-md mx-auto xl:mx-0 flex flex-col h-[400px] sm:h-[500px]">
+            <div className="h-12 sm:h-16 bg-gray-700/50 flex items-center space-x-2 p-3 sm:p-4">
+              <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gray-600 rounded"></div>
+              <div className="h-4 sm:h-5 bg-gray-600 rounded w-32"></div>
+            </div>
+            
+            <div className="flex-1 bg-gray-50 p-3 sm:p-4">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex justify-start">
+                  <div className="max-w-[180px] sm:max-w-[200px] h-12 sm:h-16 bg-gray-200 rounded-lg"></div>
+                </div>
+                <div className="flex justify-end">
+                  <div className="max-w-[180px] sm:max-w-[200px] h-8 sm:h-10 bg-gray-700/50 rounded-lg"></div>
+                </div>
+                <div className="flex justify-start">
+                  <div className="max-w-[180px] sm:max-w-[200px] h-16 sm:h-20 bg-gray-200 rounded-lg"></div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-3 sm:p-4 border-t bg-white">
+              <div className="flex space-x-2">
+                <div className="flex-1 h-10 sm:h-12 bg-gray-200 rounded-lg"></div>
+                <div className="w-10 sm:w-12 h-10 sm:h-12 bg-gray-700/50 rounded-lg"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
