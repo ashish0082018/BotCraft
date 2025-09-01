@@ -228,50 +228,50 @@ export default function BotDetails() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2 flex items-center">
-          <Bot className="h-8 w-8 text-blue-400 mr-3" />
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2 flex items-center">
+          <Bot className="h-6 w-6 sm:h-8 sm:w-8 text-blue-400 mr-2 sm:mr-3" />
           {botDetails.name}
         </h1>
-        <p className="text-gray-400 flex items-center">
-          <Calendar className="h-4 w-4 mr-2" />
+        <p className="text-gray-400 flex items-center text-sm sm:text-base">
+          <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
           Created {formatDate(botDetails.createdAt)}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-8">
         {/* Left Column - Bot Information and Customization */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Bot Information */}
-          <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-6">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-              <Key className="h-5 w-5 text-blue-400 mr-2" />
+          <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center">
+              <Key className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400 mr-2" />
               API Key
             </h3>
-            <div className="bg-gray-900/80 rounded-lg p-4 relative group">
-              <code className="text-green-400 text-sm break-all">
+            <div className="bg-gray-900/80 rounded-lg p-3 sm:p-4 relative group">
+              <code className="text-green-400 text-xs sm:text-sm break-all">
                 {botDetails.apiKey}
               </code>
               <button
                 onClick={copyApiKey}
-                className="absolute top-2 right-2 p-2 text-gray-400 hover:text-blue-400 transition-colors opacity-0 group-hover:opacity-100"
+                className="absolute top-2 right-2 p-1.5 sm:p-2 text-gray-400 hover:text-blue-400 transition-colors opacity-0 group-hover:opacity-100"
               >
-                <Copy className="h-4 w-4" />
+                <Copy className="h-3 w-3 sm:h-4 sm:w-4" />
               </button>
             </div>
-            <p className="text-gray-400 text-sm mt-2">
+            <p className="text-gray-400 text-xs sm:text-sm mt-2">
               Use this API key to integrate your bot with external applications.
             </p>
           </div>
 
           {/* Bot Statistics */}
-          <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Bot Statistics</h3>
-            <div className="space-y-3">
+          <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Bot Statistics</h3>
+            <div className="space-y-2 sm:space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Status</span>
+                <span className="text-gray-400 text-sm sm:text-base">Status</span>
                 <div className="flex items-center space-x-2">
-                  <span className={`font-medium ${botDetails.stats.status === 'ACTIVE' ? 'text-green-400' : 'text-red-400'}`}>
+                  <span className={`font-medium text-sm sm:text-base ${botDetails.stats.status === 'ACTIVE' ? 'text-green-400' : 'text-red-400'}`}>
                     {botDetails.stats.status}
                   </span>
                   <button
@@ -280,19 +280,19 @@ export default function BotDetails() {
                     className="p-1 rounded transition-colors hover:bg-white/10 disabled:opacity-50"
                   >
                     {botDetails.stats.status === 'ACTIVE' ? 
-                      <ToggleRight className="h-4 w-4 text-green-400" /> : 
-                      <ToggleLeft className="h-4 w-4 text-red-400" />
+                      <ToggleRight className="h-3 w-3 sm:h-4 sm:w-4 text-green-400" /> : 
+                      <ToggleLeft className="h-3 w-3 sm:h-4 sm:w-4 text-red-400" />
                     }
                   </button>
                 </div>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Total Queries</span>
-                <span className="text-white font-medium">{botDetails.stats.totalQueries}</span>
+                <span className="text-gray-400 text-sm sm:text-base">Total Queries</span>
+                <span className="text-white font-medium text-sm sm:text-base">{botDetails.stats.totalQueries}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Last Activity</span>
-                <span className="text-white font-medium">
+                <span className="text-gray-400 text-sm sm:text-base">Last Activity</span>
+                <span className="text-white font-medium text-sm sm:text-base">
                   {botDetails.stats.lastActivityAt ? formatDate(botDetails.stats.lastActivityAt) : 'Never'}
                 </span>
               </div>
@@ -300,31 +300,31 @@ export default function BotDetails() {
           </div>
 
           {/* Bot Customization */}
-          <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-6">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-              <Palette className="h-5 w-5 text-blue-400 mr-2" />
+          <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center">
+              <Palette className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400 mr-2" />
               Bot Customization
             </h3>
             
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {/* Primary Color */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center">
-                  <Palette className="h-4 w-4 mr-1" />
+                <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2 flex items-center">
+                  <Palette className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                   Primary Color
                 </label>
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2 sm:space-x-3">
                   <input
                     type="color"
                     value={customization.primaryColor}
                     onChange={(e) => setCustomization(prev => ({ ...prev, primaryColor: e.target.value }))}
-                    className="w-12 h-10 rounded border border-gray-600 cursor-pointer"
+                    className="w-10 h-8 sm:w-12 sm:h-10 rounded border border-gray-600 cursor-pointer"
                   />
                   <input
                     type="text"
                     value={customization.primaryColor}
                     onChange={(e) => setCustomization(prev => ({ ...prev, primaryColor: e.target.value }))}
-                    className="flex-1 px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                    className="flex-1 px-2 sm:px-3 py-1.5 sm:py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 text-xs sm:text-sm"
                     placeholder="#007bff"
                   />
                 </div>
@@ -332,30 +332,30 @@ export default function BotDetails() {
 
               {/* Header Text */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center">
-                  <Type className="h-4 w-4 mr-1" />
+                <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2 flex items-center">
+                  <Type className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                   Header Text
                 </label>
                 <input
                   type="text"
                   value={customization.headerText}
                   onChange={(e) => setCustomization(prev => ({ ...prev, headerText: e.target.value }))}
-                  className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  className="w-full px-2 sm:px-3 py-1.5 sm:py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 text-xs sm:text-sm"
                   placeholder="Chat with AI"
                 />
               </div>
 
               {/* Initial Message */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center">
-                  <MessageSquare className="h-4 w-4 mr-1" />
+                <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2 flex items-center">
+                  <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                   Initial Message
                 </label>
                 <textarea
                   value={customization.initialMessage}
                   onChange={(e) => setCustomization(prev => ({ ...prev, initialMessage: e.target.value }))}
                   rows={3}
-                  className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 resize-none"
+                  className="w-full px-2 sm:px-3 py-1.5 sm:py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 resize-none text-xs sm:text-sm"
                   placeholder="Hi! How can I help you today?"
                 />
               </div>
@@ -364,9 +364,9 @@ export default function BotDetails() {
               <button
                 onClick={handleSaveCustomization}
                 disabled={isSaving}
-                className="w-full py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-lg hover:from-blue-500 hover:to-cyan-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-lg hover:from-blue-500 hover:to-cyan-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm sm:text-base"
               >
-                <Save className="h-4 w-4 mr-2" />
+                <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
                 {isSaving ? 'Saving...' : 'Save Customization'}
               </button>
             </div>
@@ -374,24 +374,24 @@ export default function BotDetails() {
         </div>
 
         {/* Right Column - Demo Chatbot */}
-        <div className="bg-white rounded-xl shadow-xl overflow-hidden max-w-md mx-auto lg:mx-0 flex flex-col h-[500px]">
+        <div className="bg-white rounded-xl shadow-xl overflow-hidden max-w-md mx-auto xl:mx-0 flex flex-col h-[400px] sm:h-[500px]">
           <div 
-            className="text-white p-4 flex items-center space-x-2 flex-shrink-0"
+            className="text-white p-3 sm:p-4 flex items-center space-x-2 flex-shrink-0"
             style={{ backgroundColor: customization.primaryColor }}
           >
-            <MessageCircle className="h-5 w-5" />
-            <span className="font-semibold">{customization.headerText}</span>
+            <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="font-semibold text-sm sm:text-base">{customization.headerText}</span>
           </div>
           
-          <div className="flex-1 overflow-y-auto bg-gray-50 p-4">
-            <div className="space-y-4">
+          <div className="flex-1 overflow-y-auto bg-gray-50 p-3 sm:p-4">
+            <div className="space-y-3 sm:space-y-4">
               {chatMessages.map((msg, index) => (
                 <div
                   key={index}
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[200px] p-3 rounded-lg ${
+                    className={`max-w-[180px] sm:max-w-[200px] p-2.5 sm:p-3 rounded-lg text-xs sm:text-sm ${
                       msg.role === 'user'
                         ? 'text-white'
                         : 'bg-white text-gray-900 border border-gray-200'
@@ -404,11 +404,11 @@ export default function BotDetails() {
               ))}
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-white border border-gray-200 p-3 rounded-lg">
+                  <div className="bg-white border border-gray-200 p-2.5 sm:p-3 rounded-lg">
                     <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                     </div>
                   </div>
                 </div>
@@ -417,23 +417,23 @@ export default function BotDetails() {
             </div>
           </div>
           
-          <form onSubmit={handleSendMessage} className="p-4 border-t bg-white flex-shrink-0">
+          <form onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t bg-white flex-shrink-0">
             <div className="flex space-x-2">
               <input
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm"
+                className="flex-1 p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-xs sm:text-sm"
                 placeholder="Ask me anything about your documents..."
                 disabled={isLoading}
               />
               <button
                 type="submit"
                 disabled={!message.trim() || isLoading}
-                className="p-3 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 sm:p-3 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ backgroundColor: customization.primaryColor }}
               >
-                <Send className="h-4 w-4" />
+                <Send className="h-3 w-3 sm:h-4 sm:w-4" />
               </button>
             </div>
           </form>

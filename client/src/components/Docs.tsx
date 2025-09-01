@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Check, Copy, MessageCircle, Send } from 'lucide-react';
+import { Check, Copy, MessageCircle, Send, Menu, X } from 'lucide-react';
 
 export default function Docs() {
   const [activeTab, setActiveTab] = useState('sdk');
   const [demoMessage, setDemoMessage] = useState('');
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
   const sidebarItems = [
     {
@@ -28,12 +29,44 @@ export default function Docs() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-blue-900 pt-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex flex-col lg:flex-row gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        {/* Mobile Header */}
+        <div className="lg:hidden mb-6">
+          <button
+            onClick={() => setShowMobileSidebar(!showMobileSidebar)}
+            className="flex items-center space-x-2 text-gray-300 hover:text-blue-300 transition-colors"
+          >
+            <Menu className="h-6 w-6" />
+            <span className="text-lg font-semibold text-white">Documentation</span>
+          </button>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+          {/* Mobile Sidebar Overlay */}
+          {showMobileSidebar && (
+            <div 
+              className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+              onClick={() => setShowMobileSidebar(false)}
+            />
+          )}
+
           {/* Sidebar */}
-          <div className="lg:w-64 shrink-0">
-            <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-6 sticky top-24">
-              <h2 className="text-lg font-semibold text-white mb-6">Documentation</h2>
+          <div className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white/5 backdrop-blur-md border-r border-blue-500/20 transform transition-transform duration-300 ease-in-out lg:transform-none ${
+            showMobileSidebar ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          } lg:w-64 lg:shrink-0`}>
+            <div className="p-4 sm:p-6 lg:sticky lg:top-24">
+              {/* Mobile close button */}
+              <div className="flex justify-between items-center mb-6 lg:hidden">
+                <h2 className="text-lg font-semibold text-white">Documentation</h2>
+                <button
+                  onClick={() => setShowMobileSidebar(false)}
+                  className="text-gray-400 hover:text-white"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <h2 className="text-lg font-semibold text-white mb-6 hidden lg:block">Documentation</h2>
               {sidebarItems.map((section) => (
                 <div key={section.title} className="mb-6">
                   <h3 className="text-sm font-medium text-blue-400 mb-3">{section.title}</h3>
@@ -41,7 +74,10 @@ export default function Docs() {
                     {section.items.map((item) => (
                       <li key={item.id}>
                         <button
-                          onClick={() => setActiveTab(item.id)}
+                          onClick={() => {
+                            setActiveTab(item.id);
+                            setShowMobileSidebar(false);
+                          }}
                           className={`text-sm transition-colors hover:text-blue-300 ${
                             activeTab === item.id ? 'text-blue-400' : 'text-gray-400'
                           }`}
@@ -58,17 +94,17 @@ export default function Docs() {
 
           {/* Content */}
           <div className="flex-1">
-            <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-8">
+            <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-4 sm:p-6 lg:p-8">
               {activeTab === 'sdk' && (
                 <div>
-                  <h1 className="text-3xl font-bold text-white mb-6">SDK Integration</h1>
-                  <p className="text-gray-300 mb-6">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-white mb-4 sm:mb-6">SDK Integration</h1>
+                  <p className="text-gray-300 mb-4 sm:mb-6 text-sm sm:text-base">
                     Embed the BotCraft chatbot widget directly into your website using our CDN script.
                   </p>
                   
-                  <h3 className="text-xl font-semibold text-white mb-4">Installation</h3>
-                  <div className="bg-gray-900/80 rounded-lg p-4 mb-6 relative group">
-                    <code className="text-green-400 text-sm">
+                  <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">Installation</h3>
+                  <div className="bg-gray-900/80 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 relative group">
+                    <code className="text-green-400 text-xs sm:text-sm">
 {`<script 
   src="http://localhost:3000/api/v2/bot/widget.js" 
   data-api-key="sa-74e0e564-05e6-428f-9620-c949b3d5e242" 
@@ -83,8 +119,8 @@ export default function Docs() {
                     </button>
                   </div>
                   
-                  <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
-                    <p className="text-blue-300 text-sm">
+                  <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 sm:p-4">
+                    <p className="text-blue-300 text-xs sm:text-sm">
                       <strong>Note:</strong> Replace the API key with your actual bot's API key from your dashboard.
                     </p>
                   </div>
@@ -93,8 +129,8 @@ export default function Docs() {
 
               {activeTab === 'ui-demo' && (
                 <div>
-                  <h1 className="text-3xl font-bold text-white mb-6">Chatbot UI Demo</h1>
-                  <p className="text-gray-300 mb-6">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-white mb-4 sm:mb-6">Chatbot UI Demo</h1>
+                  <p className="text-gray-300 mb-4 sm:mb-6 text-sm sm:text-base">
                     Preview how the chatbot widget will appear on your website.
                   </p>
                   

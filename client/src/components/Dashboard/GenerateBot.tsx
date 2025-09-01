@@ -144,185 +144,194 @@ export default function GenerateBot() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Generate Bot</h1>
-        <p className="text-gray-400">
-          Create a new AI chatbot from your documents
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+          Generate New Bot
+        </h1>
+        <p className="text-gray-400 text-sm sm:text-base">
+          Create a new AI bot by uploading documents or providing a URL
         </p>
       </div>
 
-      {/* Create Bot Form */}
-      <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-8 mb-8">
-        <h2 className="text-xl font-semibold text-white mb-6">Create New Bot</h2>
-        
-        {!canCreateBot && (
-          <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6">
-            <p className="text-red-300 text-sm">
-              You've reached the maximum number of bots for your {user.plan.currentPlan} plan. 
-              <Link to="/dashboard/billing" className="text-red-400 hover:text-red-300 underline ml-1">
-                Upgrade to create more bots.
-              </Link>
-            </p>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Bot Name
-            </label>
-            <input
-              type="text"
-              value={botName}
-              onChange={(e) => setBotName(e.target.value)}
-              className="w-full px-4 py-3 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
-              placeholder="e.g., Customer Support Bot"
-              required
-              disabled={!canCreateBot}
-            />
-          </div>
-
-          {/* Upload Method Toggle */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-4">
-              Document Source
-            </label>
-            <div className="flex space-x-4 mb-6">
-              <button
-                type="button"
-                onClick={() => {
-                  setUploadMethod('pdf');
-                  setDocumentLink('');
-                }}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
-                  uploadMethod === 'pdf'
-                    ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                    : 'bg-white/5 text-gray-400 border border-gray-600 hover:border-blue-500/30'
-                }`}
-                disabled={!canCreateBot}
-              >
-                <FileText className="h-4 w-4" />
-                <span>Upload PDF</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setUploadMethod('link');
-                  setSelectedFile(null);
-                }}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
-                  uploadMethod === 'link'
-                    ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                    : 'bg-white/5 text-gray-400 border border-gray-600 hover:border-blue-500/30'
-                }`}
-                disabled={!canCreateBot}
-              >
-                <Globe className="h-4 w-4" />
-                <span>Document Link</span>
-              </button>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+        {/* Create Bot Form */}
+        <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-4 sm:p-6">
+          <h2 className="text-xl sm:text-2xl font-semibold text-white mb-4 sm:mb-6">Create New Bot</h2>
+          
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            {/* Bot Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Bot Name
+              </label>
+              <input
+                type="text"
+                value={botName}
+                onChange={(e) => setBotName(e.target.value)}
+                className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors text-sm sm:text-base"
+                placeholder="My AI Assistant"
+                required
+              />
             </div>
 
-            {uploadMethod === 'pdf' ? (
-              <div
-                className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-all ${
-                  dragActive 
-                    ? 'border-blue-400 bg-blue-500/10' 
-                    : 'border-gray-600 hover:border-blue-500/50'
-                } ${!canCreateBot ? 'opacity-50 pointer-events-none' : ''}`}
-                onDragEnter={handleDrag}
-                onDragLeave={handleDrag}
-                onDragOver={handleDrag}
-                onDrop={handleDrop}
-              >
-                <input
-                  type="file"
-                  accept=".pdf"
-                  onChange={handleFileChange}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  disabled={!canCreateBot}
-                />
-                <Upload className="h-12 w-12 text-blue-400 mx-auto mb-4" />
-                {selectedFile ? (
-                  <div>
-                    <p className="text-white font-medium">{selectedFile.name}</p>
-                    <p className="text-gray-400 text-sm">File selected - ready to create bot</p>
-                  </div>
-                ) : (
-                  <div>
-                    <p className="text-white font-medium mb-2">Drop your PDF here</p>
-                    <p className="text-gray-400 text-sm">or click to browse files</p>
-                  </div>
-                )}
+            {/* Upload Method Toggle */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-3">Upload Method</label>
+              <div className="flex space-x-4">
+                <button
+                  type="button"
+                  onClick={() => setUploadMethod('pdf')}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all text-sm sm:text-base ${
+                    uploadMethod === 'pdf'
+                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                      : 'bg-white/10 text-gray-400 border border-gray-600 hover:bg-white/20'
+                  }`}
+                >
+                  <Upload className="h-4 w-4" />
+                  <span>Upload PDF</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUploadMethod('link')}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all text-sm sm:text-base ${
+                    uploadMethod === 'link'
+                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                      : 'bg-white/10 text-gray-400 border border-gray-600 hover:bg-white/20'
+                  }`}
+                >
+                  <Globe className="h-4 w-4" />
+                  <span>Document URL</span>
+                </button>
               </div>
-            ) : (
+            </div>
+
+            {/* File Upload */}
+            {uploadMethod === 'pdf' && (
               <div>
+                <label className="block text-sm font-medium text-gray-300 mb-3">Upload PDF Document</label>
+                <div
+                  className={`border-2 border-dashed rounded-lg p-6 text-center transition-all ${
+                    dragActive
+                      ? 'border-blue-400 bg-blue-500/10'
+                      : 'border-gray-600 hover:border-gray-500'
+                  }`}
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={handleDrop}
+                >
+                  {selectedFile ? (
+                    <div className="space-y-2">
+                      <FileText className="h-8 w-8 text-green-400 mx-auto" />
+                      <p className="text-white text-sm sm:text-base">{selectedFile.name}</p>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedFile(null)}
+                        className="text-red-400 hover:text-red-300 text-sm"
+                      >
+                        Remove file
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Upload className="h-8 w-8 text-gray-400 mx-auto" />
+                      <p className="text-gray-300 text-sm sm:text-base">
+                        Drag and drop a PDF file here, or click to select
+                      </p>
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        id="file-upload"
+                      />
+                      <label
+                        htmlFor="file-upload"
+                        className="cursor-pointer text-blue-400 hover:text-blue-300 text-sm"
+                      >
+                        Choose file
+                      </label>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Document URL */}
+            {uploadMethod === 'link' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Document URL
+                </label>
                 <input
                   type="url"
                   value={documentLink}
                   onChange={(e) => setDocumentLink(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
-                  placeholder="https://example.com/docs"
-                  disabled={!canCreateBot}
+                  className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors text-sm sm:text-base"
+                  placeholder="https://example.com/document.pdf"
+                  required
                 />
-                <p className="text-gray-400 text-sm mt-2">
-                  Provide a link to your documentation or website
-                </p>
               </div>
             )}
-          </div>
 
-                      <button
+            {/* Create Button */}
+            <button
               type="submit"
-              disabled={!canCreateBot || !botName || (!selectedFile && !documentLink) || isCreating}
-              className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-lg hover:from-blue-500 hover:to-cyan-500 transition-all shadow-lg hover:shadow-blue-500/25 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              disabled={isCreating || !botName || (uploadMethod === 'pdf' && !selectedFile) || (uploadMethod === 'link' && !documentLink)}
+              className="w-full py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-lg hover:from-blue-500 hover:to-cyan-500 transition-all shadow-lg hover:shadow-blue-500/25 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
-              <Plus className="h-5 w-5 inline mr-2" />
               {isCreating ? 'Creating Bot...' : 'Create Bot'}
             </button>
-        </form>
-      </div>
+          </form>
+        </div>
 
-      {/* Existing Bots */}
-      <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-8">
-        <h2 className="text-xl font-semibold text-white mb-6">Your Bots</h2>
-        
-        {user.bots && user.bots.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {user.bots.map((bot: any) => (
-              <div key={bot.id} className="bg-white/5 rounded-lg border border-gray-700 p-6 hover:border-blue-500/30 transition-all">
-                <div className="flex items-start justify-between mb-4">
-                  <Bot className="h-8 w-8 text-blue-400" />
-                  <button
-                    onClick={() => setDeleteConfirm(bot.id)}
-                    className="text-gray-400 hover:text-red-400 transition-colors"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+        {/* Existing Bots */}
+        <div className="bg-white/5 backdrop-blur-md rounded-xl border border-blue-500/20 p-4 sm:p-6">
+          <h2 className="text-xl sm:text-2xl font-semibold text-white mb-4 sm:mb-6">Your Bots</h2>
+          
+          {user.bots && user.bots.length > 0 ? (
+            <div className="space-y-3 sm:space-y-4">
+              {user.bots.map((bot: BotType) => (
+                <div
+                  key={bot.id}
+                  className="bg-white/5 backdrop-blur-md rounded-lg border border-blue-500/20 p-3 sm:p-4 hover:border-blue-400/40 transition-all"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />
+                      <div>
+                        <h3 className="text-white font-medium text-sm sm:text-base">{bot.name}</h3>
+                        <p className="text-gray-400 text-xs sm:text-sm">
+                          Created {new Date(bot.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Link
+                        to={`/dashboard/bot/${bot.id}`}
+                        className="p-1.5 sm:p-2 text-blue-400 hover:text-blue-300 transition-colors"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Link>
+                      <button
+                        onClick={() => setDeleteConfirm(bot.id)}
+                        className="p-1.5 sm:p-2 text-red-400 hover:text-red-300 transition-colors"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                
-                <h3 className="text-lg font-semibold text-white mb-2">{bot.name}</h3>
-                <div className="flex items-center text-gray-400 text-sm mb-4">
-                  <Calendar className="h-4 w-4 mr-1" />
-                  Created {formatDate(bot.createdAt)}
-                </div>
-                
-                <div className="flex space-x-2">
-                  <Link
-                    to={`/dashboard/bot/${bot.id}`}
-                    className="flex-1 px-4 py-2 bg-blue-500/20 text-blue-400 text-center rounded-lg hover:bg-blue-500/30 transition-colors"
-                  >
-                    View Details
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <Bot className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-400">No bots created yet. Create your first bot above!</p>
-          </div>
-        )}
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <Bot className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+              <p className="text-gray-400 text-sm sm:text-base">No bots created yet</p>
+              <p className="text-gray-500 text-xs sm:text-sm mt-1">Create your first bot to get started</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Delete Confirmation Modal */}

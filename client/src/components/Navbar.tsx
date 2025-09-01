@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Bot, ChevronDown, User, Settings, LogOut } from 'lucide-react';
+import { Bot, ChevronDown, User, Settings, LogOut, Menu, X } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../redux/userSlice';
 import axios from 'axios';
@@ -11,6 +11,7 @@ export default function Navbar() {
   const user = useSelector((state: any) => state.user.authUserDetails);
   const isAuthenticated = !!user;
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const location = useLocation();
 
   const handleLogout = async () => {
@@ -48,8 +49,8 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Navigation Links */}
-          <div className="flex items-center space-x-8">
+          {/* Desktop Navigation Links */}
+          <div className="hidden md:flex items-center space-x-8">
             <Link
               to="/docs"
               className={`text-sm font-medium transition-colors hover:text-blue-300 ${
@@ -126,7 +127,93 @@ export default function Navbar() {
               </>
             )}
           </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className="text-gray-300 hover:text-blue-300 transition-colors"
+            >
+              {showMobileMenu ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {showMobileMenu && (
+          <div className="md:hidden bg-gray-900/95 backdrop-blur-md border-t border-blue-500/20">
+            <div className="px-4 py-4 space-y-4">
+              <Link
+                to="/docs"
+                className={`block text-sm font-medium transition-colors hover:text-blue-300 ${
+                  isActive('/docs') ? 'text-blue-400' : 'text-gray-300'
+                }`}
+                onClick={() => setShowMobileMenu(false)}
+              >
+                Docs
+              </Link>
+              
+              {!isAuthenticated ? (
+                <>
+                  <a href="#features" className="block text-sm font-medium text-gray-300 hover:text-blue-300 transition-colors" onClick={() => setShowMobileMenu(false)}>
+                    Features
+                  </a>
+                  <a href="#pricing" className="block text-sm font-medium text-gray-300 hover:text-blue-300 transition-colors" onClick={() => setShowMobileMenu(false)}>
+                    Pricing
+                  </a>
+                  <Link
+                    to="/signin"
+                    className="block text-sm font-medium text-gray-300 hover:text-blue-300 transition-colors"
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="block px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-medium rounded-lg hover:from-blue-500 hover:to-blue-600 transition-all shadow-lg hover:shadow-blue-500/25 text-center"
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    Get Started
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <a href="#features" className="block text-sm font-medium text-gray-300 hover:text-blue-300 transition-colors" onClick={() => setShowMobileMenu(false)}>
+                    Features
+                  </a>
+                  <a href="#pricing" className="block text-sm font-medium text-gray-300 hover:text-blue-300 transition-colors" onClick={() => setShowMobileMenu(false)}>
+                    Pricing
+                  </a>
+                  
+                  <div className="border-t border-gray-700 pt-4">
+                    <div className="flex items-center space-x-2 text-gray-300 mb-4">
+                      <User className="h-5 w-5" />
+                      <span className="text-sm font-medium">{user?.name}</span>
+                    </div>
+                    <Link
+                      to="/dashboard/settings"
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-300 hover:text-blue-300 hover:bg-blue-500/10 transition-colors rounded-lg"
+                      onClick={() => setShowMobileMenu(false)}
+                    >
+                      <Settings className="h-4 w-4" />
+                      <span>Settings</span>
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setShowMobileMenu(false);
+                        handleLogout();
+                      }}
+                      className="flex items-center space-x-2 w-full px-4 py-2 text-sm text-gray-300 hover:text-red-400 hover:bg-red-500/10 transition-colors rounded-lg"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );
