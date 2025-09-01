@@ -15,7 +15,7 @@ const __dirname=path.resolve();
 app.use(cors());
 app.use(cors({
     origin: process.env.NODE_ENV === 'production' 
-        ? "https://blogify-6ym8.onrender.com" 
+        ? 'https://botcraft-k4ri.onrender.com'
         : ["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:3000", "http://127.0.0.1:5173"],
     credentials: true,
 }))
