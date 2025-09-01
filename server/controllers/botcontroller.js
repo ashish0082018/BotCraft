@@ -622,7 +622,7 @@ export const serveWidget = (req, res) => {
     };
 
     try {
-        const response = await fetch(\`http://localhost:3000/api/v2/bot/widget-config?apiKey=\${apiKey}\`);
+        const response = await fetch(\`https://botcraft-k4ri.onrender.com/api/v2/bot/widget-config?apiKey=\${apiKey}\`);
         if (response.ok) {
             const fetchedConfig = await response.json();
             config = { ...config, ...fetchedConfig };
@@ -670,7 +670,7 @@ export const serveWidget = (req, res) => {
         chatInput.value = '';
         showLoadingIndicator();
         try {
-            const response = await fetch('http://localhost:3000/api/v/bot', { 
+            const response = await fetch('https://botcraft-k4ri.onrender.com/api/v/bot', { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': \`Bearer \${apiKey}\` },
                 body: JSON.stringify({ question: userMessage })
