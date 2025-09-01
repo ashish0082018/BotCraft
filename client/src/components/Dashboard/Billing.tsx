@@ -7,6 +7,9 @@ import { setauthUserDetail } from '../../redux/userSlice';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 
+// API base URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 // Declare Razorpay as a global type
 declare global {
   interface Window {
@@ -84,13 +87,13 @@ export default function Billing() {
     setIsProcessing(true);
     
     try {
-      const keyResponse = await axios.get('http://localhost:3000/api/v1/user/getkey');
+      const keyResponse = await axios.get(`${API_BASE_URL}/api/v1/user/getkey`);
       if (!keyResponse.data.success || !keyResponse.data.key) {
           throw new Error("Could not retrieve payment key.");
       }
       const razorpayKey = keyResponse.data.key;
       // Create order
-      const orderResponse = await fetch('http://localhost:3000/api/v1/user/createorder', {
+      const orderResponse = await fetch(`${API_BASE_URL}/api/v1/user/createorder`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -118,7 +121,7 @@ export default function Billing() {
         handler: async function (response: any) {
           try {
             // Verify payment
-            const verifyResponse = await fetch('http://localhost:3000/api/v1/user/verifyorder', {
+            const verifyResponse = await fetch(`${API_BASE_URL}/api/v1/user/verifyorder`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

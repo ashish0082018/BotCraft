@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Bot, ChevronDown, User, Settings, LogOut, Menu, X } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../redux/userSlice';
 import axios from 'axios';
+
+// API base URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export default function Navbar() {
   const dispatch = useDispatch();
@@ -16,7 +19,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await axios.get('http://localhost:3000/api/v1/user/signout', {
+      await axios.get(`${API_BASE_URL}/api/v1/user/signout`, {
         withCredentials: true,
       });
       

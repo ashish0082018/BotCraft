@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Check, Copy, MessageCircle, Send, Menu, X, Code, Terminal } from 'lucide-react';
 
+// API base URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function Docs() {
   const [activeTab, setActiveTab] = useState('sdk');
   const [demoMessage, setDemoMessage] = useState('');
@@ -40,7 +43,7 @@ export default function Docs() {
       case 'javascript':
         return `// Using fetch API
 async function askBot(question) {
-  const response = await fetch('http://localhost:3000/api/v/bot', {
+  const response = await fetch('${API_BASE_URL}/api/v/bot', {
     method: 'POST',
     headers: {
       'Authorization': 'Bearer YOUR_API_KEY',
@@ -65,7 +68,7 @@ askBot('How do I use this?')
         return `import requests
 
 def ask_bot(question):
-    url = "http://localhost:3000/api/v/bot"
+    url = "${API_BASE_URL}/api/v/bot"
     headers = {
         "Authorization": "Bearer YOUR_API_KEY",
         "Content-Type": "application/json"
@@ -83,7 +86,7 @@ response = ask_bot("How do I use this?")
 print(response)`;
       
       case 'curl':
-        return `curl -X POST http://localhost:3000/api/v/bot \\
+        return `curl -X POST ${API_BASE_URL}/api/v/bot \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -101,7 +104,7 @@ function BotIntegration() {
   const askQuestion = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3000/api/v/bot', {
+      const res = await fetch('${API_BASE_URL}/api/v/bot', {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer YOUR_API_KEY',
@@ -230,7 +233,7 @@ const BotcraftWidget = ({ apiKey }) => {
 
     const script = document.createElement('script');
     script.id = 'botcraft-widget-script';
-    script.src = 'http://localhost:3000/api/v2/bot/widget.js';
+    script.src = '${API_BASE_URL}/api/v2/bot/widget.js';
     script.setAttribute('data-api-key', apiKey);
     script.defer = true;
     
@@ -255,7 +258,7 @@ const BotcraftWidget = ({ apiKey }) => {
 export default BotcraftWidget;`}
                     </code>
                     <button
-                      onClick={() => copyToClipboard(`import React, { useEffect } from 'react';\n\nconst BotcraftWidget = ({ apiKey }) => {\n  useEffect(() => {\n    if (document.getElementById('botcraft-widget-script')) {\n      return;\n    }\n\n    const script = document.createElement('script');\n    script.id = 'botcraft-widget-script';\n    script.src = 'http://localhost:3000/api/v2/bot/widget.js';\n    script.setAttribute('data-api-key', apiKey);\n    script.defer = true;\n    \n    document.body.appendChild(script);\n\n    return () => {\n      const existingScript = document.getElementById('botcraft-widget-script');\n      if (existingScript) {\n        document.body.removeChild(existingScript);\n      }\n      \n      const icon = document.getElementById('botcraft-chat-icon');\n      const widget = document.getElementById('botcraft-widget-container');\n      if (icon) icon.remove();\n      if (widget) widget.remove();\n    };\n  }, [apiKey]);\n\n  return null;\n};\n\nexport default BotcraftWidget;`)}
+                      onClick={() => copyToClipboard(`import React, { useEffect } from 'react';\n\nconst BotcraftWidget = ({ apiKey }) => {\n  useEffect(() => {\n    if (document.getElementById('botcraft-widget-script')) {\n      return;\n    }\n\n    const script = document.createElement('script');\n    script.id = 'botcraft-widget-script';\n    script.src = '${API_BASE_URL}/api/v2/bot/widget.js';\n    script.setAttribute('data-api-key', apiKey);\n    script.defer = true;\n    \n    document.body.appendChild(script);\n\n    return () => {\n      const existingScript = document.getElementById('botcraft-widget-script');\n      if (existingScript) {\n        document.body.removeChild(existingScript);\n      }\n      \n      const icon = document.getElementById('botcraft-chat-icon');\n      const widget = document.getElementById('botcraft-widget-container');\n      if (icon) icon.remove();\n      if (widget) widget.remove();\n    };\n  }, [apiKey]);\n\n  return null;\n};\n\nexport default BotcraftWidget;`)}
                       className="absolute top-2 right-2 p-2 text-gray-400 hover:text-blue-400 transition-colors opacity-0 group-hover:opacity-100"
                     >
                       <Copy className="h-4 w-4" />
@@ -352,7 +355,7 @@ export default App;`}
                   <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">API Request</h3>
                   <div className="bg-gray-900/80 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 relative group">
                     <code className="text-green-400 text-xs sm:text-sm whitespace-pre">
-{`POST http://localhost:3000/api/v/bot
+{`POST ${API_BASE_URL}/api/v/bot
 Headers: { 
   "Authorization": "Bearer <API_KEY>",
   "Content-Type": "application/json"
@@ -362,7 +365,7 @@ Body: {
 }`}
                     </code>
                     <button
-                      onClick={() => copyToClipboard('POST http://localhost:3000/api/v/bot\nHeaders: { "Authorization": "Bearer <API_KEY>", "Content-Type": "application/json" }\nBody: { "question": "Your question here" }')}
+                      onClick={() => copyToClipboard('POST ${API_BASE_URL}/api/v/bot\nHeaders: { "Authorization": "Bearer <API_KEY>", "Content-Type": "application/json" }\nBody: { "question": "Your question here" }')}
                       className="absolute top-2 right-2 p-2 text-gray-400 hover:text-blue-400 transition-colors opacity-0 group-hover:opacity-100"
                     >
                       <Copy className="h-4 w-4" />

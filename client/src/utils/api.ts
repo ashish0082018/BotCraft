@@ -3,10 +3,13 @@ import { setauthUserDetail } from '../redux/userSlice';
 import store from '../redux/store';
 import toast from 'react-hot-toast';
 
+// API base URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 // Function to fetch and update user dashboard data
 export const updateUserData = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/api/v1/user/dashboard', {
+    const response = await axios.get(`${API_BASE_URL}/api/v1/user/dashboard`, {
       withCredentials: true,
     });
     

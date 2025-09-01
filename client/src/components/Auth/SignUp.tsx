@@ -6,6 +6,9 @@ import { setauthUserDetail } from '../../redux/userSlice';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+// API base URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 interface SignUpProps {
   onSignUp: (name: string, email: string, password: string) => void;
 }
@@ -23,7 +26,7 @@ export default function SignUp({ onSignUp }: SignUpProps) {
     setLoading(true);
     
     try {
-      const response = await axios.post('http://localhost:3000/api/v1/user/signup', {
+      const response = await axios.post(`${API_BASE_URL}/api/v1/user/signup`, {
         name,
         email,
         password,

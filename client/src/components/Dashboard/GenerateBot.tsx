@@ -7,6 +7,9 @@ import type { Bot as BotType } from '../../types';
 import { updateUserData } from '../../utils/api';
 import toast from 'react-hot-toast';
 
+// API base URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function GenerateBot() {
   const user = useSelector((state: any) => state.user.authUserDetails);
   const [botName, setBotName] = useState('');
@@ -82,7 +85,7 @@ export default function GenerateBot() {
         return;
       }
 
-      const response = await axios.post('http://localhost:3000/api/v2/bot/uploadpdf', formData, {
+      const response = await axios.post(`${API_BASE_URL}/api/v2/bot/uploadpdf`, formData, {
         withCredentials: true,
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -112,7 +115,7 @@ export default function GenerateBot() {
     try {
       setIsDeleting(true);
       // Call the delete bot API
-      const response = await axios.get(`http://localhost:3000/api/v2/bot/delete/${botId}`, {
+      const response = await axios.get(`${API_BASE_URL}/api/v2/bot/delete/${botId}`, {
         withCredentials: true,
       });
 

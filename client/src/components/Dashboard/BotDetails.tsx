@@ -5,6 +5,9 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+// API base URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 interface BotDetails {
   id: string;
   name: string;
@@ -66,7 +69,7 @@ export default function BotDetails() {
   const loadBotDetails = async () => {
     try {
       setIsLoadingDetails(true);
-      const response = await axios.get(`http://localhost:3000/api/v2/bot/get-bot-details/${botId}`, {
+      const response = await axios.get(`${API_BASE_URL}/api/v2/bot/get-bot-details/${botId}`, {
         withCredentials: true,
       });
 
@@ -222,7 +225,7 @@ export default function BotDetails() {
       setIsToggling(true);
       const newStatus = botDetails.stats.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
       
-      const response = await axios.post(`http://localhost:3000/api/v2/bot/toggle-status/${botDetails.id}`, {
+      const response = await axios.post(`${API_BASE_URL}/api/v2/bot/toggle-status/${botDetails.id}`, {
         status: newStatus
       }, {
         withCredentials: true,
@@ -249,7 +252,7 @@ export default function BotDetails() {
   const handleSaveCustomization = async () => {
     try {
       setIsSaving(true);
-      const response = await axios.post(`http://localhost:3000/api/v2/bot/update-customization/${botDetails.id}`, {
+      const response = await axios.post(`${API_BASE_URL}/api/v2/bot/update-customization/${botDetails.id}`, {
         primaryColor: customization.primaryColor,
         headerText: customization.headerText,
         initialMessage: customization.initialMessage
@@ -284,7 +287,7 @@ export default function BotDetails() {
     setChatMessages(prev => [...prev, { role: 'user', content: userMessage }]);
 
     try {
-      const response = await axios.post(`http://localhost:3000/api/v2/bot/test-bot/${botDetails.id}`, {
+      const response = await axios.post(`${API_BASE_URL}/api/v2/bot/test-bot/${botDetails.id}`, {
         question: userMessage
       }, {
         withCredentials: true,
