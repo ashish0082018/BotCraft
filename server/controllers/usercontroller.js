@@ -6,6 +6,73 @@ import jwt from "jsonwebtoken";
 // import dotenv from "dotenv";
 // dotenv.config()
 
+
+
+const fetchUserDashboardData = async (userId) => {
+    try {
+        const userStats = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                plan: true,
+                requestsLeft: true,
+                createdAt: true,
+                _count: {
+                    select: { bots: true }
+                },
+                bots: {
+                    select: { id: true, name: true, createdAt: true },
+                    orderBy: { createdAt: 'desc' }
+                },
+                payments: {
+                    where: { status: 'SUCCESS' },
+                    select: { id: true, razorpayId: true, amount: true, status: true, createdAt: true },
+                    orderBy: { createdAt: 'desc' }
+                }
+            }
+        });
+
+        if (!userStats) return null;
+
+        // Plan limits yahan define karein
+        const planLimits = {
+            FREE: { botsLimit: 2, requestsLimit: 100 },
+            PRO: { botsLimit: 10, requestsLimit: 1000 }
+        };
+
+        const currentPlan = planLimits[userStats.plan] || planLimits.FREE;
+
+        // Final dashboard object prepare karein
+        const dashboardData = {
+            profile: {
+                id: userStats.id,
+                name: userStats.name,
+                email: userStats.email,
+                memberSince: userStats.createdAt
+            },
+            plan: {
+                currentPlan: userStats.plan,
+                requestsLeft: userStats.requestsLeft,
+                requestsLimit: currentPlan.requestsLimit,
+            },
+            stats: {
+                totalBots: userStats._count.bots,
+                botsLimit: currentPlan.botsLimit,
+            },
+            bots: userStats.bots,
+            paymentHistory: userStats.payments
+        };
+
+        return dashboardData;
+    } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        throw new Error("Could not fetch user dashboard data.");
+    }
+};
+
+
 export const signUp = async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -35,20 +102,14 @@ export const signUp = async (req, res) => {
                 password: hashedPassword,
             }
         })
-
+        const dashboardData = await fetchUserDashboardData(user.id);
         const token = jwt.sign({ userid: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
         
         res.cookie('token', token, { httpOnly: true, sameSite: 'strict', maxAge: 1 * 24 * 60 * 60 * 1000 });
+      
+       
         return res.status(200).json({
-            user: {
-                name:user.name,
-                email:user.email,
-                id:user.id,
-                plan:user.plan,
-                requestsLeft:user.requestsLeft,
-                createdAt:user.createdAt,
-                updatedAt:user.updatedAt
-            },
+            dashboardData,
             success: true,
         });
     } catch (error) {
@@ -88,20 +149,13 @@ export  const signIn=async (req,res)=>{
             })
         }
         
-        
+        const dashboardData = await fetchUserDashboardData(loginuser.id);
         
         const token= jwt.sign({userid:loginuser.id},process.env.JWT_SECRET,{expiresIn:'1d'})
+        console.log("User info----",loginuser);
         return res.cookie('token',token,{httpOnly:true,sameSite:'strict',maxAge:1*24*60*60*1000}).json({    
           success:true,
-           user:{
-            name:loginuser.name,
-            email:loginuser.email,
-            id:loginuser.id,
-            plan:loginuser.plan,
-            requestsLeft:loginuser.requestsLeft,
-            createdAt:loginuser.createdAt,
-            updatedAt:loginuser.updatedAt
-           },
+          dashboardData
          
         }) 
         
@@ -127,6 +181,35 @@ export const signOut=async(req,res)=>{
       console.log(error);
     }
 }
+
+
+export const getUserData = async (req, res) => {
+    try {
+        const userId = req.id; // From JWT middleware
+        const dashboardData = await fetchUserDashboardData(userId);
+
+        if (!dashboardData) {
+            return res.status(404).json({ message: "User not found", success: false });
+        }
+
+        res.json({ success: true, data: dashboardData });
+
+    } catch (error) {
+        res.status(500).json({ message: "Server error", success: false });
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const getUserStats = async (req, res) => {
     try {
