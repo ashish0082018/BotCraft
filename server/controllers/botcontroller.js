@@ -316,7 +316,8 @@ export const retrivePdf = async (req, res) => {
       4. Do not make up information or use any external knowledge
       5. If the user asks about your capabilities or identity, explain that you're an AI assistant trained on the company's documentation
       6. Be polite and professional in all responses
-      
+     NOTE-> Do not write something like that "I don't see a question in the text provided." , just say staright forward ask some relevenat question please....
+
       **Context:**`;
       const userQuery = `Context: \n${context}\n\nQuestion: ${question}`;
 
@@ -396,7 +397,7 @@ export const retrivePdfDemo = async (req, res) => {
                 4. Do not make up information or use any external knowledge
                 5. If the user asks about your capabilities or identity, explain that you're an AI assistant trained on the company's documentation
                 6. Be polite and professional in all responses
-                
+                 NOTE-> Do not write something like that "I don't see a question in the text provided." , just say staright forward ask some relevenat question please....
                 **Context:**`;
                 const userQuery = `Context: \n${context}\n\nQuestion: ${question}`;
                 
