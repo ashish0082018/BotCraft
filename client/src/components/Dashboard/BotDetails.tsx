@@ -316,6 +316,33 @@ export default function BotDetails() {
     }
   };
 
+  // Function to adjust color brightness
+  const adjustColorBrightness = (hex: string, percent: number) => {
+    // Remove the # if it's there
+    hex = hex.replace(/\s|#/g, '');
+    
+    // Convert to RGB
+    let r = parseInt(hex.substring(0, 2), 16);
+    let g = parseInt(hex.substring(2, 4), 16);
+    let b = parseInt(hex.substring(4, 6), 16);
+    
+    // Adjust brightness
+    r = Math.min(255, Math.max(0, parseInt(String(r * (100 + percent) / 100))));
+    g = Math.min(255, Math.max(0, parseInt(String(g * (100 + percent) / 100))));
+    b = Math.min(255, Math.max(0, parseInt(String(b * (100 + percent) / 100))));
+
+    // Convert back to hex
+    const rHex = r.toString(16).padStart(2, '0');
+    const gHex = g.toString(16).padStart(2, '0');
+    const bHex = b.toString(16).padStart(2, '0');
+
+    return `#${rHex}${gHex}${bHex}`;
+  };
+
+  // Calculate lighter and darker shades
+  const primaryLight = `${customization.primaryColor}1a`;
+  const primaryDark = adjustColorBrightness(customization.primaryColor, -20);
+
   return (
     <div>
       <div className="mb-6 sm:mb-8">
@@ -464,42 +491,90 @@ export default function BotDetails() {
         </div>
 
         {/* Right Column - Demo Chatbot */}
-        <div className="bg-white rounded-xl shadow-xl overflow-hidden max-w-md mx-auto xl:mx-0 flex flex-col h-[400px] sm:h-[500px]">
+        <div className="bg-white rounded-xl shadow-xl overflow-hidden max-w-md mx-auto xl:mx-0 flex flex-col h-[500px] sm:h-[600px]">
+          {/* Chat Header */}
           <div 
-            className="text-white p-3 sm:p-4 flex items-center space-x-2 flex-shrink-0"
+            className="text-white p-4 flex items-center gap-3 flex-shrink-0"
             style={{ backgroundColor: customization.primaryColor }}
           >
-            <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span className="font-semibold text-sm sm:text-base">{customization.headerText}</span>
+            <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path>
+              </svg>
+            </div>
+            <div className="flex-1">
+              <span className="font-semibold text-sm">{customization.headerText}</span>
+              <div className="text-xs opacity-80">Online</div>
+            </div>
+            <button className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
           </div>
           
-          <div className="flex-1 overflow-y-auto bg-gray-50 p-3 sm:p-4">
-            <div className="space-y-3 sm:space-y-4">
-              {chatMessages.map((msg, index) => (
+          {/* Chat Body */}
+          <div className="flex-1 overflow-y-auto bg-gray-50 p-4">
+            <div className="space-y-4">
+              {/* Welcome message with avatar */}
+              <div className="flex gap-3">
+                <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path>
+                  </svg>
+                </div>
+                <div className="bg-white border border-gray-200 rounded-lg rounded-tl-none p-3 max-w-[80%] text-sm">
+                  {customization.initialMessage}
+                </div>
+              </div>
+
+              {/* Chat messages */}
+              {chatMessages.slice(1).map((msg, index) => (
                 <div
                   key={index}
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
+                  {msg.role === 'bot' && (
+                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 mr-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path>
+                      </svg>
+                    </div>
+                  )}
                   <div
-                    className={`max-w-[180px] sm:max-w-[200px] p-2.5 sm:p-3 rounded-lg text-xs sm:text-sm ${
+                    className={`p-3 rounded-lg text-sm max-w-[80%] ${
                       msg.role === 'user'
-                        ? 'text-white'
-                        : 'bg-white text-gray-900 border border-gray-200'
+                        ? 'text-white rounded-br-none'
+                        : 'bg-white text-gray-800 border border-gray-200 rounded-tl-none'
                     }`}
                     style={msg.role === 'user' ? { backgroundColor: customization.primaryColor } : {}}
                   >
                     {msg.content}
                   </div>
+                  {msg.role === 'user' && (
+                    <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0 ml-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                      </svg>
+                    </div>
+                  )}
                 </div>
               ))}
+              
+              {/* Loading indicator */}
               {isLoading && (
-                <div className="flex justify-start">
-                  <div className="bg-white border border-gray-200 p-2.5 sm:p-3 rounded-lg">
-                    <div className="flex space-x-1">
-                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                    </div>
+                <div className="flex gap-3">
+                  <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path>
+                    </svg>
+                  </div>
+                  <div className="bg-white border border-gray-200 rounded-lg rounded-tl-none p-3 flex gap-1">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                   </div>
                 </div>
               )}
@@ -507,23 +582,27 @@ export default function BotDetails() {
             </div>
           </div>
           
-          <form onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t bg-white flex-shrink-0">
-            <div className="flex space-x-2">
+          {/* Chat Footer */}
+          <form onSubmit={handleSendMessage} className="p-4 border-t bg-white flex-shrink-0">
+            <div className="flex items-center bg-gray-100 rounded-full pl-4 pr-1 py-1 border border-gray-200 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all">
               <input
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="flex-1 p-2 sm:p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-xs sm:text-sm"
-                placeholder="Ask me anything about your documents..."
+                className="flex-1 bg-transparent border-none outline-none text-sm py-2"
+                placeholder="Type your message here..."
                 disabled={isLoading}
               />
               <button
                 type="submit"
                 disabled={!message.trim() || isLoading}
-                className="p-2 sm:p-3 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-10 h-10 flex items-center justify-center rounded-full text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ backgroundColor: customization.primaryColor }}
               >
-                <Send className="h-3 w-3 sm:h-4 sm:w-4" />
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
               </button>
             </div>
           </form>

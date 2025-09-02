@@ -9,6 +9,10 @@ export default function Docs() {
   const [demoMessage, setDemoMessage] = useState('');
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('javascript');
+  const [demoMessages, setDemoMessages] = useState([
+    { role: 'user', content: 'What are your operating hours?' },
+    { role: 'bot', content: 'We\'re open Monday to Friday, 9 AM to 6 PM EST. Feel free to ask any questions!' }
+  ]);
 
   const sidebarItems = [
     {
@@ -129,7 +133,7 @@ function BotIntegration() {
         onChange={(e) => setQuestion(e.target.value)}
         placeholder="Ask a question..."
       />
-      <button onClick={askQuestion} disabled={loading}>
+      <button onClick={askQuestion, disabled={loading}>
         {loading ? 'Asking...' : 'Ask'}
       </button>
       {response && <div>{JSON.stringify(response)}</div>}
@@ -167,11 +171,11 @@ export default BotIntegration;`;
             />
           )}
 
-          {/* Sidebar */}
-          <div className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white/5 backdrop-blur-md border-r border-blue-500/20 transform transition-transform duration-300 ease-in-out lg:transform-none ${
+          {/* Sidebar - Fixed the positioning and z-index */}
+          <div className={`fixed lg:sticky top-16 inset-y-0 left-0 z-30 w-64 bg-white/5 backdrop-blur-md border-r border-blue-500/20 transform transition-transform duration-300 ease-in-out lg:transform-none ${
             showMobileSidebar ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-          } lg:w-64 lg:shrink-0`}>
-            <div className="p-4 sm:p-6 lg:sticky lg:top-24">
+          } lg:w-64 lg:shrink-0 h-[calc(100vh-4rem)] overflow-y-auto`}>
+            <div className="p-4 sm:p-6">
               {/* Mobile close button */}
               <div className="flex justify-between items-center mb-6 lg:hidden">
                 <h2 className="text-lg font-semibold text-white">Documentation</h2>
@@ -275,7 +279,7 @@ function App() {
   return (
     <div className="App">
       {/* Your app content */}
-      <BotcraftWidget apiKey="sa-3f7011c6-f958-4d0b-aafd-1d9e23359683" />
+      <BotcraftWidget apiKey={"sa-3f7011c6-f958-4d0b-aafd-1d9e23359683"} />
     </div>
   );
 }
@@ -306,37 +310,95 @@ export default App;`}
                   </p>
                   
                   {/* Demo Chatbot */}
-                  <div className="bg-white rounded-lg shadow-xl max-w-md mx-auto">
-                    <div className="bg-blue-600 text-white p-4 rounded-t-lg flex items-center space-x-2">
-                      <MessageCircle className="h-5 w-5" />
-                      <span className="font-semibold">BotCraft Assistant</span>
+                  <div className="bg-white rounded-xl shadow-xl overflow-hidden max-w-md mx-auto flex flex-col h-[500px]">
+                    {/* Chat Header */}
+                    <div className="bg-blue-600 text-white p-4 flex items-center gap-3 flex-shrink-0">
+                      <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path>
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <span className="font-semibold text-sm">BotCraft Assistant</span>
+                        <div className="text-xs opacity-80">Online</div>
+                      </div>
+                      <button className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </button>
                     </div>
-                    <div className="p-4 h-64 overflow-y-auto bg-gray-50">
-                      <div className="space-y-3">
-                        <div className="bg-blue-100 text-blue-900 p-3 rounded-lg max-w-xs">
-                          Hello! I'm your AI assistant. How can I help you today?
+                    
+                    {/* Chat Body */}
+                    <div className="flex-1 overflow-y-auto bg-gray-50 p-4">
+                      <div className="space-y-4">
+                        {/* Welcome message with avatar */}
+                        <div className="flex gap-3">
+                          <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path>
+                            </svg>
+                          </div>
+                          <div className="bg-white border border-gray-200 rounded-lg rounded-tl-none p-3 max-w-[80%] text-sm">
+                            Hello! I'm your AI assistant. How can I help you today?
+                          </div>
                         </div>
-                        <div className="bg-gray-200 text-gray-900 p-3 rounded-lg max-w-xs ml-auto">
-                          What are your operating hours?
-                        </div>
-                        <div className="bg-blue-100 text-blue-900 p-3 rounded-lg max-w-xs">
-                          We're open Monday to Friday, 9 AM to 6 PM EST. Feel free to ask any questions!
-                        </div>
+
+                        {/* Chat messages */}
+                        {demoMessages.map((msg, index) => (
+                          <div
+                            key={index}
+                            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                          >
+                            {msg.role === 'bot' && (
+                              <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 mr-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path>
+                                </svg>
+                              </div>
+                            )}
+                            <div
+                              className={`p-3 rounded-lg text-sm max-w-[80%] ${
+                                msg.role === 'user'
+                                  ? 'text-white rounded-br-none'
+                                  : 'bg-white text-gray-800 border border-gray-200 rounded-tl-none'
+                              }`}
+                              style={msg.role === 'user' ? { backgroundColor: '#007bff' } : {}}
+                            >
+                              {msg.content}
+                            </div>
+                            {msg.role === 'user' && (
+                              <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0 ml-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                                  <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                        ))}
                       </div>
                     </div>
-                    <div className="p-4 border-t bg-white rounded-b-lg">
-                      <div className="flex space-x-2">
+                    
+                    {/* Chat Footer */}
+                    <div className="p-4 border-t bg-white flex-shrink-0">
+                      <div className="flex items-center bg-gray-100 rounded-full pl-4 pr-1 py-1 border border-gray-200">
                         <input
                           type="text"
-                          placeholder="Type your message..."
-                          className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                          placeholder="Type your message here..."
+                          className="flex-1 bg-transparent border-none outline-none text-sm py-2"
                           disabled
                         />
                         <button
-                          className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                          className="w-10 h-10 flex items-center justify-center rounded-full text-white transition-colors opacity-50 cursor-not-allowed"
+                          style={{ backgroundColor: '#007bff' }}
                           disabled
                         >
-                          <Send className="h-4 w-4" />
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                          </svg>
                         </button>
                       </div>
                       <p className="text-xs text-gray-500 mt-2 text-center">Demo mode - chat disabled</p>
@@ -357,7 +419,7 @@ export default App;`}
                     <code className="text-green-400 text-xs sm:text-sm whitespace-pre">
 {`POST ${API_BASE_URL}/api/v/bot
 Headers: { 
-  "Authorization": "Bearer <API_KEY>",
+  "Authorization": "Bearer <API_KEY>,
   "Content-Type": "application/json"
 }
 Body: { 

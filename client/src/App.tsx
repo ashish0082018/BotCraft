@@ -14,7 +14,7 @@ import BotDetails from './components/Dashboard/BotDetails';
 import Billing from './components/Dashboard/Billing';
 import Settings from './components/Dashboard/Settings';
 import ProtectedRoute from './components/ProtectedRoute';
-import type { Bot } from './types/';
+
 
 
 function App() {
