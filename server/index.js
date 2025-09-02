@@ -61,9 +61,7 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v2/bot", botRouter);
 app.use("/api/v", apiRouter);
 
-app.use(express.static(path.join(__dirname, "/client/dist")));
-
-// ... aapke baaki ke app.get routes ...
+// React app routes - these must come before static files
 app.get("/dashboard", (req, res) => {
     res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
 });
@@ -83,6 +81,9 @@ app.get("/signup", (req, res) => {
 app.get("/", (req, res) => {
     res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
 });
+
+// Static files - this must come after React app routes
+app.use(express.static(path.join(__dirname, "/client/dist")));
 
 
 app.listen(PORT, () => {
