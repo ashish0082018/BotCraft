@@ -32,7 +32,6 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen font-inter">
-     
         <Toaster
           position="top-right"
           toastOptions={{

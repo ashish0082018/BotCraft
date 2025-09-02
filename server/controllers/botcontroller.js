@@ -328,6 +328,7 @@ export const retrivePdf = async (req, res) => {
           })
       ]);
 
+      res.setHeader('Access-Control-Allow-Origin', '*');
       res.status(200).json({ success: true, answer: answer });
 
   } catch (error) {
@@ -339,7 +340,7 @@ export const retrivePdf = async (req, res) => {
 
 
   // Demo bot use on the bot detailed page
-  export const retrivePdfDemo = async (req, res) => {
+export const retrivePdfDemo = async (req, res) => {
     try {
         const userId = req.id;
         const { botId } = req.params;
@@ -399,6 +400,7 @@ export const retrivePdf = async (req, res) => {
             answer = `I understand you're asking: "${question}". This is a demo response. The AI service is currently being configured. Once fully set up, I'll be able to search through your documents and provide specific, accurate answers based on your content.`;
         }
 
+        res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(200).json({ success: true, answer: answer });
     } catch (error) {
         console.error("Error in retrivePdfDemo:", error);
@@ -495,6 +497,7 @@ export const getWidgetConfig = async (req, res) => {
 
       if (!apiKeyRecord?.bot) return res.status(404).json({ message: "Configuration not found." });
 
+      res.setHeader('Access-Control-Allow-Origin', '*');
       res.status(200).json(apiKeyRecord.bot);
   } catch (error) {
       console.error("Error fetching widget config:", error);
@@ -708,6 +711,7 @@ export const serveWidget = (req, res) => {
     `;
 
     res.setHeader('Content-Type', 'application/javascript');
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.send(widgetScript);
 };
   
